@@ -1,7 +1,7 @@
 #! /usr/bin/env python3
 # -*- coding:utf-8 -*-
 # @author: AnarL. (anar930906@gmail.com)
-# @version: V0.2.0
+# @version: V0.2.4
 # @environment: Python3
 # @description: 使用本程序可以轻松下载网易云音乐的歌曲，只需要有歌曲的网页即可，单独付费歌曲无法下载。
 #				本程序仅供学习交流使用，严禁用于任何商业用途，产生任何法律纠纷与作者无关。
