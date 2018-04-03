@@ -1,6 +1,6 @@
 # NetEaseMusicDownloader
 
-[README.md](https://github.com/Kito0615/NetEaseMusicDownloader/raw/master/README.md) 
+[README.md](https://github.com/Kito0615/NetEaseMusicDownloader/blob/master/README.md) 
 
 > **注意:** 这个脚本使用了[AD's API](https://api.imjad.cn/) 提供的接口，在此表示感谢. 这个脚本仅供个人学习交流使用，不能用于任何商业用途，所有法律问题均与作者无关。
 
@@ -73,5 +73,4 @@ Python3.0+
 
 Homebrew
 
-[License](http://github.com/Kito0615/NetEaseMusicDownloader/row/master/MIT.md)
-
+[License](http://github.com/Kito0615/NetEaseMusicDownloader/blob/master/MIT.md)

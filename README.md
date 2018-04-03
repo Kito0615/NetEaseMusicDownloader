@@ -1,6 +1,6 @@
 # NetEaseMusicDownloader
 
-[中文说明](https://github.com/Kito0615/NetEaseMusicDownloader/raw/master/README_CN.md) 
+[中文说明](https://github.com/Kito0615/NetEaseMusicDownloader/blob/master/README_CN.md) 
 
 > **NOTE:** In this script, I used some api via [AD's API](https://api.imjad.cn/). Thanks. This 
 > script is for personal use only. It cannot be used for any commercial 
@@ -76,5 +76,4 @@ Python3.0+
 
 Homebrew
 
-[License](http://github.com/Kito0615/NetEaseMusicDownloader/row/master/MIT.md)
-
+[License](https://github.com/Kito0615/NetEaseMusicDownloader/blob/master/MIT.md)
