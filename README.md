@@ -72,7 +72,7 @@ There are a few ways to execute the binary when you copy to `/usr/local/bin`:
 
 #### Envrionment:
 
-Python3.0+
+Python3.0+(with *requests* installed.)
 
 Homebrew
 

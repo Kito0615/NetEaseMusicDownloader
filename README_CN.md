@@ -69,7 +69,7 @@
 
 #### 环境:
 
-Python3.0+
+Python3.0+(需要安装*requests*库)
 
 Homebrew
 
