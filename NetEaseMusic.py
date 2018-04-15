@@ -12,8 +12,38 @@
 import requests, json, re, os
 import subprocess, sys, time, datetime
 
+http_error = {
+	400 : '请求错误',
+	401 : '未授权',
+	402 : '要求付费',
+	403 : '服务器禁止',
+	404 : '无法找到文件',
+	405 : '资源被禁止',
+	406 : '无法接受请求',
+	407 : '要求代理身份验证',
+	408 : '请求超时',
+	409 : '请求冲突',
+	410 : '永远不可用',
+	411 : '要求的长度',
+	412 : '先决条件失败',
+	413 : '请求实例太长',
+	414 : '请求url太长',
+	415 : '不支持的媒体类型',
+	416 : '无法满足的请求范围',
+	417 : '失败的预期',
+	500 : '内部服务器错误',
+	501 : '未实现',
+	502 : '网关错误',
+	503 : '不可用的服务',
+	504 : '网关超时',
+	505 : 'HTTP版本未被支持'
+
+}
+
 def get_response(url):
 	res = requests.get(url)
+	if res.status_code != 200:
+		print('Error:', http_error[res.status_code])
 	return json.loads(res.text)
 
 def extract_id(input_url):
@@ -248,9 +278,8 @@ def print_welcome():
 	print('* 2.可以下载单曲，也可以下载播放列表，只需要复制单曲或播放列表的网页地址即可。\t\t\t*')
 	print('* 3.可以专辑封面，但是需要电脑有lame库。如果没有，可以自动安装(需要系统有包管理工具Homebrew)\t*')
 	print('* 4.快捷方式:NetEaseMusic [url] [folder] //表示将连接url对应的文件下载到指定目录folder\t\t*')
-	print('* 5.版本:V 0.2.4\t\t\t\t\t\t\t\t\t\t*')
-	d = datetime.date.today()
-	print('* 6.编译日期: {}年{}月{}日\t\t\t\t\t\t\t\t\t*'.format(d.year, d.month, d.day))
+	print('* 5.版本:V 0.2.5\t\t\t\t\t\t\t\t\t\t*')
+	print('* 6.编译日期: 2018年4月15日\t\t\t\t\t\t\t\t\t*')
 	print('* 7.作者: AnarL.(anar930906@gmail.com)\t\t\t\t\t\t\t\t*')
 	print('*'*97)
 	print('* *注:请尊重版权，树立版权意识。\t\t\t\t\t\t\t\t*')
