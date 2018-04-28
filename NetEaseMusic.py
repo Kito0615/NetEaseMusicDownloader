@@ -41,7 +41,7 @@ http_error = {
 }
 
 def get_response(url):
-	res = requests.get(url)
+	res = requests.get(url, headers = {'User-Agent' :'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.13; rv:59.0) Gecko/20100101 Firefox/59.0'})
 	if res.status_code != 200:
 		print('Error:', http_error[res.status_code])
 	return json.loads(res.text)
@@ -76,12 +76,12 @@ def get_song_name_album_poster(type_id):
 	return obj
 
 def get_playlist_songs(type_id, folder = ''):
-	api = 'https://api.imjad.cn/cloudmusic?type=playlist&id={}'.format(type_id)
+	api = 'http://music.163.com/api/playlist/detail?id={}'.format(type_id)
 	json_obj = get_response(api)
 	if not json_obj:
 		print('❌：响应错误')
 		return
-	tracks = extract_playlist_ids(json_obj['playlist']['trackIds'])
+	tracks = extract_playlist_ids(json_obj['result']['tracks'])
 	# print(tracks)
 	idx = 1
 	total = len(tracks)
