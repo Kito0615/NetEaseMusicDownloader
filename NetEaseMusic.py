@@ -1,7 +1,7 @@
 #! /usr/bin/env python3
 # -*- coding:utf-8 -*-
 # @author: AnarL. (anar930906@gmail.com)
-# @version: V0.2.4
+# @version: V0.2.6
 # @environment: Python3
 # @description: 使用本程序可以轻松下载网易云音乐的歌曲，只需要有歌曲的网页即可，单独付费歌曲无法下载。
 #				本程序仅供学习交流使用，严禁用于任何商业用途，产生任何法律纠纷与作者无关。
@@ -278,8 +278,8 @@ def print_welcome():
 	print('* 2.可以下载单曲，也可以下载播放列表，只需要复制单曲或播放列表的网页地址即可。\t\t\t*')
 	print('* 3.可以专辑封面，但是需要电脑有lame库。如果没有，可以自动安装(需要系统有包管理工具Homebrew)\t*')
 	print('* 4.快捷方式:NetEaseMusic [url] [folder] //表示将连接url对应的文件下载到指定目录folder\t\t*')
-	print('* 5.版本:V 0.2.5\t\t\t\t\t\t\t\t\t\t*')
-	print('* 6.编译日期: 2018年4月15日\t\t\t\t\t\t\t\t\t*')
+	print('* 5.版本:V 0.2.6\t\t\t\t\t\t\t\t\t\t*')
+	print('* 6.编译日期: 2018年4月30日\t\t\t\t\t\t\t\t\t*')
 	print('* 7.作者: AnarL.(anar930906@gmail.com)\t\t\t\t\t\t\t\t*')
 	print('*'*97)
 	print('* *注:请尊重版权，树立版权意识。\t\t\t\t\t\t\t\t*')
