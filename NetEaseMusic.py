@@ -9,6 +9,9 @@
 # @README: 添加封面需要使用lame库，如果电脑中没有，请使用brew install lame或其他方式安装。暂时不支持在windows上运行
 # @lisence: MIT
 
+
+# //Pyinstaller error solution:https://stackoverflow.com/questions/48876156/pyinstaller-fails-to-import-site-module-in-python3-on-macosx
+
 import requests, json, re, os
 import subprocess, sys, time, datetime
 
