@@ -71,6 +71,8 @@
 
 Python3.0+(需要安装*requests*库)
 
+libmp3lame(用于给音乐添加封面)
+
 Homebrew
 
 [License](http://github.com/Kito0615/NetEaseMusicDownloader/blob/master/MIT.md)

@@ -74,6 +74,8 @@ There are a few ways to execute the binary when you copy to `/usr/local/bin`:
 
 Python3.0+(with *requests* installed.)
 
+libmp3lame(use this lib to add Cover for audio.)
+
 Homebrew
 
 [License](https://github.com/Kito0615/NetEaseMusicDownloader/blob/master/MIT.md)
