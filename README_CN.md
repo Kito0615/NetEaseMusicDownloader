@@ -69,7 +69,7 @@
 
 #### 环境:
 
-Python3.0+(需要安装*requests*库)
+[Python3.0+](https://www.python.org/downloads/mac-osx/) (需要安装[*requests*](https://github.com/requests/requests)库)
 
 [lame](http://lame.sourceforge.net) (用于给音乐添加封面)
 
