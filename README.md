@@ -76,6 +76,6 @@ Python3.0+(with *requests* installed.)
 
 [lame](http://lame.sourceforge.net) (use this lib to add Cover for audio.)
 
-Homebrew
+[Homebrew](https://brew.sh/) 
 
 [License](https://github.com/Kito0615/NetEaseMusicDownloader/blob/master/MIT.md)

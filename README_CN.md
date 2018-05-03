@@ -73,6 +73,6 @@ Python3.0+(需要安装*requests*库)
 
 [lame](http://lame.sourceforge.net) (用于给音乐添加封面)
 
-Homebrew
+[Homebrew](https://brew.sh/) 
 
 [License](http://github.com/Kito0615/NetEaseMusicDownloader/blob/master/MIT.md)
