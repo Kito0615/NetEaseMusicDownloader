@@ -71,7 +71,7 @@
 
 Python3.0+(需要安装*requests*库)
 
-libmp3lame(用于给音乐添加封面)
+[lame](http://lame.sourceforge.net) (用于给音乐添加封面)
 
 Homebrew
 
