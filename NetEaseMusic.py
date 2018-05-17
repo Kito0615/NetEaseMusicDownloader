@@ -1,7 +1,7 @@
 #! /usr/bin/env python3
 # -*- coding:utf-8 -*-
 # @author: AnarL. (anar930906@gmail.com)
-# @version: V0.2.6
+# @version: V0.3.1
 # @environment: Python3
 # @description: 使用本程序可以轻松下载网易云音乐的歌曲，只需要有歌曲的网页即可，单独付费歌曲无法下载。
 #				本程序仅供学习交流使用，严禁用于任何商业用途，产生任何法律纠纷与作者无关。
@@ -128,12 +128,87 @@ def download_music(url, folder = ''):
 		return
 	print('开始下载音乐:')
 	audio = download_file(json_obj['data'][0]['url'],folder = folder,  export_file_name = music_obj.title)
-	if audio == None:
+	print('------>')
+	if not audio:
+		audio = try_get_file_in_qq_music(music_obj.title, music_obj.artists)
+
+	if not audio:
 		return
 	print('开始下载封面:')
 	poster = download_file(music_obj.poster, folder = folder,  export_file_name = music_obj.title)
 	print('开始添加封面:')
-	add_poster(poster.name, music_obj.title, music_obj.artists, music_obj.album, music_obj.year, music_obj.track, audio.name)
+	audio_name = ''
+	if hasattr(audio, 'name'):
+		audio_name = audio.name
+	else :
+		audio_name = audio
+	add_poster(poster.name, music_obj.title, music_obj.artists, music_obj.album, music_obj.year, music_obj.track, audio_name)
+
+
+QQ_music_search_tip_api = 'http://soso.music.qq.com/fcgi-bin/client_search_cp?format=json&t=0&loginUin=0&inCharset=utf-8&outCharset=utf-8&qqmusic_guid=28607dfe0a8e5bab67e5441dd088e2e33b5f28a0&qqmusic_ver=50500&ct=6&catZhida=1&p=1&n=30&w={song_name}'
+QQ_music_song_info_api = 'https://c.y.qq.com/base/fcgi-bin/fcg_music_express_mobile3.fcg?g_tk=63395543&hostUin=0&format=json&inCharset=utf8&outCharset=utf-8&notice=0&platform=yqq&needNewCode=0&cid=205361747&songmid={song_id}&filename=C400{song_id}.m4a&guid=9362313912'
+QQ_music_song_dl_api = 'http://dl.stream.qqmusic.qq.com/{file_name}?vkey={v_key}&guid=9362313912&uin=0&fromtag=66'
+
+def search_qq_music(music_name, singer):
+
+	print('search in qq music...')
+	url = QQ_music_search_tip_api.format(song_name = music_name)
+	json_obj = get_response(url)
+	songs = json_obj['data']['song']['list']
+
+	target_id = ''
+
+	for item in songs:
+		item_singer = item['singer'][0]['name']
+
+		if item_singer == singer:
+			target_id = item['songmid']
+			break
+
+	return target_id
+
+def get_qq_music_dl_info(mid):
+	url = QQ_music_song_info_api.format(song_id = mid)
+	json_obj = get_response(url)
+
+	song_obj = json_obj['data']['items'][0]
+	return (song_obj['vkey'], song_obj['filename'])
+
+def download_qq_music(song_vkey, song_title, song_file_name):
+	url = QQ_music_song_dl_api.format(file_name = song_file_name, v_key = song_vkey)
+	print(song_file_name)
+	ext = song_file_name.split('.')[-1]
+	file_name = '.'.join([song_title, ext])
+	res = requests.get(url)
+	with open(file_name, 'wb') as f:
+		f.write(res.content)
+
+	return file_name
+
+def convert_to_mp3(other_media):
+
+	out_file = '.'.join(other_media.split('.')[:-1]) + '.mp3'
+
+	print('converting {origin} to {mp3}'.format(origin = other_media, mp3 = out_file))
+
+	out_bytes = subprocess.check_output(['ffmpeg', '-i', other_media, '-c:a', 'libmp3lame', '-aq', '2', out_file])
+	print(out_bytes)
+
+	return out_file
+
+
+def try_get_file_in_qq_music(song_name, singer):
+	print('try to search in qq music.')
+	music_id = search_qq_music(song_name, singer)
+	(song_v_key, song_file_name) = get_qq_music_dl_info(music_id)
+	song_file = download_qq_music(song_v_key, song_name, song_file_name)
+	mp3_file = ''
+
+	if song_file.split('.')[-1] != 'mp3':
+		mp3_file = convert_to_mp3(song_file)
+		os.remove(song_file)
+
+	return mp3_file
 
 
 def download_file(file_url, folder = '', export_file_name = None, extension = None):
@@ -281,8 +356,8 @@ def print_welcome():
 	print('* 2.可以下载单曲，也可以下载播放列表，只需要复制单曲或播放列表的网页地址即可。\t\t\t*')
 	print('* 3.可以专辑封面，但是需要电脑有lame库。如果没有，可以自动安装(需要系统有包管理工具Homebrew)\t*')
 	print('* 4.快捷方式:NetEaseMusic [url] [folder] //表示将连接url对应的文件下载到指定目录folder\t\t*')
-	print('* 5.版本:V 0.2.6\t\t\t\t\t\t\t\t\t\t*')
-	print('* 6.编译日期: 2018年4月30日\t\t\t\t\t\t\t\t\t*')
+	print('* 5.版本:V 0.3.1\t\t\t\t\t\t\t\t\t\t*')
+	print('* 6.编译日期: 2018年5月17日\t\t\t\t\t\t\t\t\t*')
 	print('* 7.作者: AnarL.(anar930906@gmail.com)\t\t\t\t\t\t\t\t*')
 	print('*'*97)
 	print('* *注:请尊重版权，树立版权意识。\t\t\t\t\t\t\t\t*')
@@ -294,4 +369,4 @@ if __name__ == '__main__':
 		main()
 	except Exception as e:
 		if e :
-			pass
+			print(e)
