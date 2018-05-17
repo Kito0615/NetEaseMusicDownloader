@@ -3,6 +3,13 @@
 [README.md](https://github.com/Kito0615/NetEaseMusicDownloader/blob/master/README.md) 
 
 > **注意:** 这个脚本使用了[AD's API](https://api.imjad.cn/) 提供的接口，在此表示感谢. 这个脚本仅供个人学习交流使用，不能用于任何商业用途，所有法律问题均与作者无关。
+>
+> **注意**: 新添加的[QQ音乐](http://y.qq.com)的接口来自其网站，**版权归[QQ音乐](http://y.qq.com)所有**。仅供**学习交流**使用
+
+#### 更新：2018-05-17
+
+1. 当[网易云音乐](http://music.163.com) 音乐资源不可用时，增加新的搜索源[QQ音乐](http://y.qq.com)。
+2. 增加新的依赖库[FFMPEG](http://ffmpeg.org)，用来转换从QQ音乐下载的*'.m4a'*文件为*'.mp3'*。
 
 #### 下载:
 
@@ -76,3 +83,5 @@
 [Homebrew](https://brew.sh/) 
 
 [License](http://github.com/Kito0615/NetEaseMusicDownloader/blob/master/MIT.md)
+
+[FFMPEG](http://ffmpeg.org)
