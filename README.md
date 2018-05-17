@@ -6,7 +6,7 @@
 > script is for personal use only. It cannot be used for any commercial 
 > activities. All legal issues are not related to the author.
 >
-> **NOTE**: With new source from [QQMusic](http://y.qq.com) added, the source API is get from ite [webpage](http://y.qq.com), **all right revserved by [QQMusic](http://y.qq.com) **. This was **only for study**.
+> **NOTE**: With new source from [QQMusic](http://y.qq.com) added, the source API is get from ite [webpage](http://y.qq.com), **all right revserved by [QQMusic](http://y.qq.com)**. This was **only for study**.
 
 #### Update:2018-05-17
 1. Add new source from [QQMusic](http://y.qq.com) when the song not available with [NetEaseMusic](http://music.163.com).
