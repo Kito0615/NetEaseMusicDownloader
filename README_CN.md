@@ -9,7 +9,7 @@
 #### 更新：2018-05-17
 
 1. 当[网易云音乐](http://music.163.com) 音乐资源不可用时，增加新的搜索源[QQ音乐](http://y.qq.com)。
-2. 增加新的依赖库[FFMPEG](http://ffmpeg.org)，用来转换从QQ音乐下载的*'.m4a'*文件为*'.mp3'*。
+2. 增加新的依赖库[FFMPEG](http://ffmpeg.org)，用来转换从QQ音乐下载的*.m4a*文件为*.mp3*。
 
 #### 下载:
 
