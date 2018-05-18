@@ -10,7 +10,7 @@
 
 #### Update:2018-05-17
 1. Add new source from [QQMusic](http://y.qq.com) when the song not available with [NetEaseMusic](http://music.163.com).
-2. Add new dependencies [FFMPEG](http://ffmpeg.org) for convert source from QQMusic with *'.m4a'* extension to *'.mp3'*.
+2. Add new dependencies [FFMPEG](http://ffmpeg.org) for convert source from QQMusic with *.m4a* extension to *.mp3*.
 
 #### Download:
 
