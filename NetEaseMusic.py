@@ -145,14 +145,14 @@ def download_music(url, folder = ''):
 	add_poster(poster.name, music_obj.title, music_obj.artists, music_obj.album, music_obj.year, music_obj.track, audio_name)
 
 
-QQ_music_search_tip_api = 'http://soso.music.qq.com/fcgi-bin/client_search_cp?format=json&t=0&loginUin=0&inCharset=utf-8&outCharset=utf-8&qqmusic_guid=28607dfe0a8e5bab67e5441dd088e2e33b5f28a0&qqmusic_ver=50500&ct=6&catZhida=1&p=1&n=30&w={song_name}'
+QQ_music_search_tip_api = 'https://c.y.qq.com/soso/fcgi-bin/client_search_cp?ct=24&qqmusic_ver=1298&new_json=1&remoteplace=txt.yqq.song&searchid=56069080114511262&t=0&aggr=1&cr=1&catZhida=1&lossless=0&flag_qc=0&p={page}&n=20&w={song_name}&g_tk=5381&loginUin=0&hostUin=0&format=json&inCharset=utf8&outCharset=utf-8&notice=0&platform=yqq&needNewCode=0'
 QQ_music_song_info_api = 'https://c.y.qq.com/base/fcgi-bin/fcg_music_express_mobile3.fcg?g_tk=63395543&hostUin=0&format=json&inCharset=utf8&outCharset=utf-8&notice=0&platform=yqq&needNewCode=0&cid=205361747&songmid={song_id}&filename=C400{song_id}.m4a&guid=9362313912'
 QQ_music_song_dl_api = 'http://dl.stream.qqmusic.qq.com/{file_name}?vkey={v_key}&guid=9362313912&uin=0&fromtag=66'
 
 def search_qq_music(music_name, singer):
 
 	print('search in qq music...')
-	url = QQ_music_search_tip_api.format(song_name = music_name)
+	url = QQ_music_search_tip_api.format(page = 1, song_name = music_name)
 	json_obj = get_response(url)
 	songs = json_obj['data']['song']['list']
 
@@ -162,7 +162,7 @@ def search_qq_music(music_name, singer):
 		item_singer = item['singer'][0]['name']
 
 		if item_singer == singer:
-			target_id = item['songmid']
+			target_id = item['mid']
 			break
 
 	return target_id
