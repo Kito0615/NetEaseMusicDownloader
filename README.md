@@ -8,6 +8,10 @@
 >
 > **NOTE**: With new source from [QQMusic](http://y.qq.com) added, the source API is get from ite [webpage](http://y.qq.com), **all right revserved by [QQMusic](http://y.qq.com)**. This was **only for study**.
 
+#### Update:2018-05-22:
+
+1. Now you can use this tool to download songs/playlists/albums. Use *AD's API*.
+
 #### Update:2018-05-17
 1. Add new source from [QQMusic](http://y.qq.com) when the song not available with [NetEaseMusic](http://music.163.com).
 2. Add new dependencies [FFMPEG](http://ffmpeg.org) for convert source from QQMusic with *.m4a* extension to *.mp3*.
