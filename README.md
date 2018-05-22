@@ -2,7 +2,7 @@
 
 [中文说明](https://github.com/Kito0615/NetEaseMusicDownloader/blob/master/README_CN.md) 
 
-![](https://img.shields.io/badge/Platform-Python3-009eff.svg) ![](https://img.shields.io/badge/Windows-Unsupported-ff005f.svg) ![](https://img.shields.io/badge/MacOS-Supported-00efff.svg)![](https://img.shields.io/badge/Linux-Supported-00efff.svg)
+![](https://img.shields.io/badge/Platform-Python3-009eff.svg) ![](https://img.shields.io/badge/Windows-Unsupported-ff005f.svg)  ![](https://img.shields.io/badge/MacOS-Supported-00efff.svg) ![](https://img.shields.io/badge/Linux-Supported-00efff.svg)
 
 > **NOTE:** In this script, I used some api via [AD's API](https://api.imjad.cn/). Thanks. This 
 > script is for personal use only. It cannot be used for any commercial 
