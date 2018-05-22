@@ -47,6 +47,7 @@ def get_response(url):
 	res = requests.get(url, headers = {'User-Agent' :'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.13; rv:59.0) Gecko/20100101 Firefox/59.0'})
 	if res.status_code != 200:
 		print('Error:', http_error[res.status_code])
+		print(url)
 	return json.loads(res.text)
 
 def extract_id(input_url):
@@ -95,6 +96,25 @@ def get_playlist_songs(type_id, folder = ''):
 		time.sleep(1)
 		idx += 1
 
+def get_album_songs(type_id, folder = ''):
+	api = 'https://api.imjad.cn/cloudmusic/?type=album&id={}'.format(type_id)
+	json_obj = get_response(api)
+	if not json_obj:
+		print('❌：响应错误')
+		return
+
+	tracks = extract_playlist_ids(json_obj['songs'])
+	album_name = json_obj['album']['name']
+	idx = 1
+	total = len(tracks)
+
+	for track in tracks:
+		print('正在下载《{}》({}/{})'.format(album_name, idx, total))
+		url = 'http://music.163.com/#/song?id={}'.format(track)
+		download_music(url, folder)
+		time.sleep(1)
+		idx += 1
+
 
 def extract_playlist_ids(tracks_json):
 	ret_tracks = []
@@ -105,8 +125,13 @@ def extract_playlist_ids(tracks_json):
 
 def download_playlist(url, folder = ''):
 	type_id = extract_id(url)
-	print('开始解析播放列表信息...')
+	print('开始解析歌单信息...')
 	get_playlist_songs(type_id, folder = folder)
+
+def download_album(url, folder = ''):
+	type_id = extract_id(url)
+	print('开始解析专辑信息...')
+	get_album_songs(type_id, folder = folder)
 
 
 def download_music(url, folder = ''):
@@ -284,14 +309,21 @@ def main():
 		url = sys.argv[1]
 		folder = sys.argv[2]
 
-	if not judge_if_playlist(url):
+	if judge_if_playlist(url):
+		download_playlist(url, folder = folder)
+	elif judge_if_album(url):
+		download_album(url, folder = folder)
+	else:
 		download_music(url, folder = folder)
-		return
-	download_playlist(url, folder = folder)
 
 
 def judge_if_playlist(url):
 	if url.find('playlist') != -1:
+		return True
+	return False
+
+def judge_if_album(url):
+	if url.find('album') != -1:
 		return True
 	return False
 
@@ -356,8 +388,8 @@ def print_welcome():
 	print('* 2.可以下载单曲，也可以下载播放列表，只需要复制单曲或播放列表的网页地址即可。\t\t\t*')
 	print('* 3.可以专辑封面，但是需要电脑有lame库。如果没有，可以自动安装(需要系统有包管理工具Homebrew)\t*')
 	print('* 4.快捷方式:NetEaseMusic [url] [folder] //表示将连接url对应的文件下载到指定目录folder\t\t*')
-	print('* 5.版本:V 0.3.1\t\t\t\t\t\t\t\t\t\t*')
-	print('* 6.编译日期: 2018年5月17日\t\t\t\t\t\t\t\t\t*')
+	print('* 5.版本:V 0.4.0\t\t\t\t\t\t\t\t\t\t*')
+	print('* 6.编译日期: 2018年5月22日\t\t\t\t\t\t\t\t\t*')
 	print('* 7.作者: AnarL.(anar930906@gmail.com)\t\t\t\t\t\t\t\t*')
 	print('*'*97)
 	print('* *注:请尊重版权，树立版权意识。\t\t\t\t\t\t\t\t*')
