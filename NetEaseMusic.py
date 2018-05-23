@@ -79,6 +79,29 @@ def get_song_name_album_poster(type_id):
 	obj = Music(song_name, singers, album, year, track, poster)
 	return obj
 
+def get_max_size(size_keys):
+	max_size = 0
+	for key in size_keys:
+		if int(key) > max_size:
+			max_size = int(key)
+
+	return str(max_size)
+
+
+def get_mv_info(type_id):
+	api = 'https://api.imjad.cn/cloudmusic/?type=mv&id={}'.format(type_id)
+	json_obj = get_response(api)
+	if not json_obj:
+		print('❌ :获取MV信息失败')
+		return None
+
+	mv_info = json_obj['data']
+	size_keys = mv_info['brs'].keys()
+	default_mv_url = mv_info['brs'][get_max_size(size_keys)]
+	mv_name = mv_info['name']
+
+	return (default_mv_url, mv_name)
+
 def get_playlist_songs(type_id, folder = ''):
 	api = 'http://music.163.com/api/playlist/detail?id={}'.format(type_id)
 	json_obj = get_response(api)
@@ -132,6 +155,16 @@ def download_album(url, folder = ''):
 	type_id = extract_id(url)
 	print('开始解析专辑信息...')
 	get_album_songs(type_id, folder = folder)
+
+def download_mv(url, folder = ''):
+	# pattern = https://music.163.com/#/mv?id={}
+	print('开始下载MV...')
+	type_id = extract_id(url)
+	if not type_id:
+		print('❌ :解析MV视频ID失败')
+		return
+	(mv_url, mv_name) = get_mv_info(type_id)
+	download_file(mv_url, folder = folder, export_file_name = mv_name)
 
 
 def download_music(url, folder = ''):
@@ -196,13 +229,15 @@ def get_qq_music_dl_info(mid):
 	url = QQ_music_song_info_api.format(song_id = mid)
 	json_obj = get_response(url)
 
+	print(json_obj)
+
 	song_obj = json_obj['data']['items'][0]
 	return (song_obj['vkey'], song_obj['filename'])
 
 def download_qq_music(song_vkey, song_title, song_file_name):
 	url = QQ_music_song_dl_api.format(file_name = song_file_name, v_key = song_vkey)
 	if len(song_vkey) == 0:
-		print('❌ :获取QQ音乐下载链接失败')
+		print('❌ :获取QQ音乐下载链接失败，可能是数字专辑或需要单独付费。')
 		return ""
 	ext = song_file_name.split('.')[-1]
 	file_name = '.'.join([song_title, ext])
@@ -318,6 +353,8 @@ def main():
 		download_playlist(url, folder = folder)
 	elif judge_if_album(url):
 		download_album(url, folder = folder)
+	elif judge_if_mv(url):
+		download_mv(url, folder = folder)
 	else:
 		download_music(url, folder = folder)
 
@@ -329,6 +366,11 @@ def judge_if_playlist(url):
 
 def judge_if_album(url):
 	if url.find('album') != -1:
+		return True
+	return False
+
+def judge_if_mv(url):
+	if url.find('mv') != -1:
 		return True
 	return False
 
@@ -392,10 +434,11 @@ def print_welcome():
 	print('* 1.本工具可以下载网易云音乐收费歌曲(单独付费除外，如霉霉的歌曲。)\t\t\t\t*')
 	print('* 2.可以下载单曲，也可以下载播放列表，只需要复制单曲或播放列表的网页地址即可。\t\t\t*')
 	print('* 3.可以专辑封面，但是需要电脑有lame库。如果没有，可以自动安装(需要系统有包管理工具Homebrew)\t*')
-	print('* 4.快捷方式:NetEaseMusic [url] [folder] //表示将连接url对应的文件下载到指定目录folder\t\t*')
-	print('* 5.版本:V 0.4.0\t\t\t\t\t\t\t\t\t\t*')
-	print('* 6.编译日期: 2018年5月22日\t\t\t\t\t\t\t\t\t*')
-	print('* 7.作者: AnarL.(anar930906@gmail.com)\t\t\t\t\t\t\t\t*')
+	print('* 4.可以下载歌曲MV，默认下载最高分辨率的MV。 TODO:增加MV分辨率下载选项。\t\t\t*')
+	print('* 5.快捷方式:NetEaseMusic [url] [folder] //表示将连接url对应的文件下载到指定目录folder\t\t*')
+	print('* 6.版本:V 0.4.3\t\t\t\t\t\t\t\t\t\t*')
+	print('* 7.编译日期: 2018年5月23日\t\t\t\t\t\t\t\t\t*')
+	print('* 8.作者: AnarL.(anar930906@gmail.com)\t\t\t\t\t\t\t\t*')
 	print('*'*97)
 	print('* *注:请尊重版权，树立版权意识。\t\t\t\t\t\t\t\t*')
 	print('*'*97)
