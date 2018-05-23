@@ -201,7 +201,9 @@ def get_qq_music_dl_info(mid):
 
 def download_qq_music(song_vkey, song_title, song_file_name):
 	url = QQ_music_song_dl_api.format(file_name = song_file_name, v_key = song_vkey)
-	print(song_file_name)
+	if len(song_vkey) == 0:
+		print('❌ :获取QQ音乐下载链接失败')
+		return ""
 	ext = song_file_name.split('.')[-1]
 	file_name = '.'.join([song_title, ext])
 	res = requests.get(url)
@@ -228,6 +230,9 @@ def try_get_file_in_qq_music(song_name, singer):
 	(song_v_key, song_file_name) = get_qq_music_dl_info(music_id)
 	song_file = download_qq_music(song_v_key, song_name, song_file_name)
 	mp3_file = ''
+
+	if len(song_file) == 0:
+		return None
 
 	if song_file.split('.')[-1] != 'mp3':
 		mp3_file = convert_to_mp3(song_file)
