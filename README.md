@@ -87,7 +87,7 @@ There are a few ways to execute the binary when you copy to `/usr/local/bin`:
 
 [Python3.0+](https://www.python.org/downloads/mac-osx/) (with [*requests*](https://github.com/requests/requests) installed.)
 
-[lame](http://lame.sourceforge.net) (use this lib to add Cover for audio.)
+[lame](http://lame.sourceforge.net) (use this lib to add Cover for audio.) [Here](https://github.com/Kito0615/NetEaseMusicDownloader/blob/master/Install_lame.md) is some instructions.
 
 [Homebrew](https://brew.sh/) 
 
