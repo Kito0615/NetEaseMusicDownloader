@@ -2,14 +2,20 @@
 
 [README.md](https://github.com/Kito0615/NetEaseMusicDownloader/blob/master/README.md) 
 
+![](https://img.shields.io/badge/Platform-Python3-009eff.svg) ![](https://img.shields.io/badge/Windows-Supported-00efff.svg)  ![](https://img.shields.io/badge/MacOS-Supported-00efff.svg) ![](https://img.shields.io/badge/Linux-Supported-00efff.svg)
+
 > **注意:** 这个脚本使用了[AD's API](https://api.imjad.cn/) 提供的接口，在此表示感谢. 这个脚本仅供个人学习交流使用，不能用于任何商业用途，所有法律问题均与作者无关。
 >
 > **注意**: 新添加的[QQ音乐](http://y.qq.com)的接口来自其网站，**版权归[QQ音乐](http://y.qq.com)所有**。仅供**学习交流**使用
 
+#### 更新: 2018-05-22
+
+1. 现在可以使用工具下载歌曲/歌单/专辑了。使用*AD's API*。
+
 #### 更新：2018-05-17
 
 1. 当[网易云音乐](http://music.163.com) 音乐资源不可用时，增加新的搜索源[QQ音乐](http://y.qq.com)。
-2. 增加新的依赖库[FFMPEG](http://ffmpeg.org)，用来转换从QQ音乐下载的*'.m4a'*文件为*'.mp3'*。
+2. 增加新的依赖库[FFMPEG](http://ffmpeg.org)，用来转换从QQ音乐下载的*.m4a*文件为*.mp3*。
 
 #### 下载:
 
@@ -78,10 +84,11 @@
 
 [Python3.0+](https://www.python.org/downloads/mac-osx/) (需要安装[*requests*](https://github.com/requests/requests)库)
 
-[lame](http://lame.sourceforge.net) (用于给音乐添加封面)
+[lame](http://lame.sourceforge.net) (用于给音乐添加封面) [这里](https://github.com/Kito0615/NetEaseMusicDownloader/blob/master/Install_lame.md)有一点安装指南。
 
 [Homebrew](https://brew.sh/) 
 
 [License](http://github.com/Kito0615/NetEaseMusicDownloader/blob/master/MIT.md)
 
 [FFMPEG](http://ffmpeg.org)
+

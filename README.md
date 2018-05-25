@@ -2,15 +2,22 @@
 
 [中文说明](https://github.com/Kito0615/NetEaseMusicDownloader/blob/master/README_CN.md) 
 
+![](https://img.shields.io/badge/Platform-Python3-009eff.svg) ![](https://img.shields.io/badge/Windows-Supported-00efff.svg)  ![](https://img.shields.io/badge/MacOS-Supported-00efff.svg) ![](https://img.shields.io/badge/Linux-Supported-00efff.svg)
+
 > **NOTE:** In this script, I used some api via [AD's API](https://api.imjad.cn/). Thanks. This 
 > script is for personal use only. It cannot be used for any commercial 
 > activities. All legal issues are not related to the author.
 >
 > **NOTE**: With new source from [QQMusic](http://y.qq.com) added, the source API is get from ite [webpage](http://y.qq.com), **all right revserved by [QQMusic](http://y.qq.com)**. This was **only for study**.
 
+#### Update:2018-05-22:
+
+1. Now you can use this tool to download songs/playlists/albums. Use *AD's API*.
+2. Support windows now. You 
+
 #### Update:2018-05-17
 1. Add new source from [QQMusic](http://y.qq.com) when the song not available with [NetEaseMusic](http://music.163.com).
-2. Add new dependencies [FFMPEG](http://ffmpeg.org) for convert source from QQMusic with *'.m4a'* extension to *'.mp3'*.
+2. Add new dependencies [FFMPEG](http://ffmpeg.org) for convert source from QQMusic with *.m4a* extension to *.mp3*.
 
 #### Download:
 
@@ -80,7 +87,7 @@ There are a few ways to execute the binary when you copy to `/usr/local/bin`:
 
 [Python3.0+](https://www.python.org/downloads/mac-osx/) (with [*requests*](https://github.com/requests/requests) installed.)
 
-[lame](http://lame.sourceforge.net) (use this lib to add Cover for audio.)
+[lame](http://lame.sourceforge.net) (use this lib to add Cover for audio.) [Here](https://github.com/Kito0615/NetEaseMusicDownloader/blob/master/Install_lame.md) is some instructions.
 
 [Homebrew](https://brew.sh/) 
 
