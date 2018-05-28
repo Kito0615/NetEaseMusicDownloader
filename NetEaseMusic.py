@@ -1,7 +1,7 @@
 #! /usr/bin/env python3
 # -*- coding:utf-8 -*-
 # @author: AnarL. (anar930906@gmail.com)
-# @version: V0.3.1
+# @version: V0.4.6
 # @environment: Python3
 # @description: 使用本程序可以轻松下载网易云音乐的歌曲，只需要有歌曲的网页即可，单独付费歌曲无法下载。
 #				本程序仅供学习交流使用，严禁用于任何商业用途，产生任何法律纠纷与作者无关。
@@ -14,6 +14,8 @@
 
 import requests, json, re, os
 import subprocess, sys, time, datetime
+
+__DATE__ = '2018年5月28日'
 
 http_error = {
 	400 : '请求错误',
@@ -59,7 +61,7 @@ def extract_id(input_url):
 	return None
 
 def get_song_name_album_poster(type_id):
-	api = 'https://api.imjad.cn/cloudmusic/?type=detail&id={}'.format(type_id)
+	api = 'http://music.163.com/api/song/detail?ids=[{}]'.format(type_id)
 	json_obj = get_response(api)
 	if not json_obj:
 		print('❌：获取歌曲详细信息失败！')
@@ -67,14 +69,20 @@ def get_song_name_album_poster(type_id):
 
 	song_obj = json_obj['songs'][0]
 	song_name = song_obj['name']
-	artists = song_obj['ar']
+	artists = song_obj['artists']
 	singers = []
 	for ar in artists:
 		singers.append(ar['name'])
-	album = song_obj['al']['name']
-	year = year_of_timestamp(song_obj['publishTime'] / 1000)
+
+	album_obj = None
+	if 'al' in song_obj.keys():
+		album_obj = song_obj['al']
+	elif 'album' in song_obj.keys():
+		album_obj = song_obj['album']
+	album = album_obj['name']
+	year = year_of_timestamp(album_obj['publishTime'] / 1000)
 	track = song_obj['no']
-	poster = song_obj['al']['picUrl']
+	poster = album_obj['picUrl']
 
 	obj = Music(song_name, singers, album, year, track, poster)
 	return obj
@@ -436,8 +444,8 @@ def print_welcome():
 	print('* 3.可以专辑封面，但是需要电脑有lame库。如果没有，可以自动安装(需要系统有包管理工具Homebrew)\t*')
 	print('* 4.可以下载歌曲MV，默认下载最高分辨率的MV。 TODO:增加MV分辨率下载选项。\t\t\t*')
 	print('* 5.快捷方式:NetEaseMusic [url] [folder] //表示将连接url对应的文件下载到指定目录folder\t\t*')
-	print('* 6.版本:V 0.4.3\t\t\t\t\t\t\t\t\t\t*')
-	print('* 7.编译日期: 2018年5月23日\t\t\t\t\t\t\t\t\t*')
+	print('* 6.版本:V 0.4.6\t\t\t\t\t\t\t\t\t\t*')
+	print('* 7.编译日期: {}\t\t\t\t\t\t\t\t\t*'.format(__DATE__))
 	print('* 8.作者: AnarL.(anar930906@gmail.com)\t\t\t\t\t\t\t\t*')
 	print('*'*97)
 	print('* *注:请尊重版权，树立版权意识。\t\t\t\t\t\t\t\t*')
