@@ -32,7 +32,7 @@ You can download any from [this page](http://lame.sourceforge.net/download.php).
 
 If you have installed **homebrew**. You can use brew to install lame like this :`brew install lame` in terminal.
 
-> **P.S.** I have not upload the NetEaseMusic.exe file. If you want to use it on windows and you have required environment, you can download the source file(*NetEaseMusic.py*) use *pyinstaller* compiled by yourself. I will upload it ASAP.
+> **P.S.** I have uploaded the windows exe file as compressed zip file in release.
 
 # 安装Lame编码器
 
@@ -66,4 +66,4 @@ If you have installed **homebrew**. You can use brew to install lame like this :
 
 如果你的电脑中安装了**HomeBrew**的话，你可以在终端中使用`brew install lame`安装。
 
-> **附**: 我现在还没有上传NetEaseMusic.exe文件，如果你想在Windows上使用并且你的电脑中安装有需求的环境的话，你可以自己使用*pyinstaller*自己编译。我会尽快上传的。
+> **附**: 我已经上传了Windows平台的EXE文件了，已经压缩为zip包。

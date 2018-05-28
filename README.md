@@ -13,7 +13,8 @@
 #### Update:2018-05-22:
 
 1. Now you can use this tool to download songs/playlists/albums. Use *AD's API*.
-2. Support windows now. You 
+2. Support windows now. 
+3. Support NetEaseMusic MV download now.
 
 #### Update:2018-05-17
 1. Add new source from [QQMusic](http://y.qq.com) when the song not available with [NetEaseMusic](http://music.163.com).
