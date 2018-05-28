@@ -10,6 +10,10 @@
 >
 > **NOTE**: With new source from [QQMusic](http://y.qq.com) added, the source API is get from ite [webpage](http://y.qq.com), **all right revserved by [QQMusic](http://y.qq.com)**. This was **only for study**.
 
+#### Update:2018-05-28
+
+1. Use new non-offcial api which get from the web replaced the old api.
+
 #### Update:2018-05-22:
 
 1. Now you can use this tool to download songs/playlists/albums. Use *AD's API*.
