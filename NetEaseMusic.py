@@ -269,19 +269,23 @@ def convert_to_mp3(other_media):
 
 def try_get_file_in_qq_music(song_name, singer):
 	print('try to search in qq music.')
-	music_id = search_qq_music(song_name, singer)
-	(song_v_key, song_file_name) = get_qq_music_dl_info(music_id)
-	song_file = download_qq_music(song_v_key, song_name, song_file_name)
-	mp3_file = ''
+	try:
+		music_id = search_qq_music(song_name, singer)
+		(song_v_key, song_file_name) = get_qq_music_dl_info(music_id)
+		song_file = download_qq_music(song_v_key, song_name, song_file_name)
+		mp3_file = ''
 
-	if len(song_file) == 0:
-		return None
+		if len(song_file) == 0:
+			return None
 
-	if song_file.split('.')[-1] != 'mp3':
-		mp3_file = convert_to_mp3(song_file)
-		os.remove(song_file)
+		if song_file.split('.')[-1] != 'mp3':
+			mp3_file = convert_to_mp3(song_file)
+			os.remove(song_file)
 
-	return mp3_file
+		return mp3_file
+	except Exception as e:
+		print(e)
+		print('V_key', song_v_key)
 
 
 def download_file(file_url, folder = '', export_file_name = None, extension = None):
