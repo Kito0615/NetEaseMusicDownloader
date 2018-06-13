@@ -285,7 +285,6 @@ def try_get_file_in_qq_music(song_name, singer):
 		return mp3_file
 	except Exception as e:
 		print(e)
-		print('V_key', song_v_key)
 
 
 def download_file(file_url, folder = '', export_file_name = None, extension = None):
