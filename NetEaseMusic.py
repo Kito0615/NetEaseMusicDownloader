@@ -1,8 +1,7 @@
 #! /usr/bin/env python3
 # -*- coding:utf-8 -*-
 # @author: AnarL. (anar930906@gmail.com)
-# @version: V0.4.6
-# @environment: Python3
+# @environment: Python3 with requests
 # @description: 使用本程序可以轻松下载网易云音乐的歌曲，只需要有歌曲的网页即可，单独付费歌曲无法下载。
 #				本程序仅供学习交流使用，严禁用于任何商业用途，产生任何法律纠纷与作者无关。
 # 				请尊重版权，树立版权意识。
@@ -15,7 +14,8 @@
 import requests, json, re, os
 import subprocess, sys, time, datetime
 
-__DATE__ = '2018年5月28日'
+__DATE__ = '2018年6月14日'
+__VERSION__ = 'V 0.4.8'
 
 http_error = {
 	400 : '请求错误',
@@ -306,7 +306,7 @@ def download_file(file_url, folder = '', export_file_name = None, extension = No
 
 	if os.path.exists(file):
 		print('文件已存在！')
-		return
+		return file
 	with requests.get(file_url, stream = True) as response:
 		chunk_size = 1024 # 单次请求最大值
 		content_size = int(response.headers['content-length']) #内容总体大小
@@ -340,6 +340,15 @@ def add_poster(poster, title, artists, album, year, track, music):
 		old_file = music + '.' + music.split('.')[-1]
 		if os.path.exists(old_file):
 			os.rename(old_file, music)
+
+		if ADD_TO_ITUNES == True:
+			ext = os.path.exists(os.path.expanduser('~/Music/iTunes/iTunes Media/Automatically Add to iTunes'))
+			new_name = ''
+			if ext == False:
+				new_name = os.path.expanduser('~/Music/iTunes/iTunes Media/Automatically Add to iTunes.localized/' + music.split('/')[-1])
+			else :
+				new_name = '~/Music/iTunes/iTunes Media/Automatically Add to iTunes/' + music.split('/')[-1]
+			os.rename(music, os.path.expanduser(new_name))
 	except Exception as e:
 		print(e)
 
@@ -350,6 +359,7 @@ def remove_file(file):
 	return False
 
 def main():
+	global ADD_TO_ITUNES
 	url = ''
 	folder = ''
 	if len(sys.argv) == 1:
@@ -359,6 +369,13 @@ def main():
 	elif len(sys.argv) == 3:
 		url = sys.argv[1]
 		folder = sys.argv[2]
+
+	i = input('请问是否直接添加到iTunes？(y or n)')
+	print(i)
+	if i.lower() == 'y':
+		ADD_TO_ITUNES = True
+	else:
+		ADD_TO_ITUNES = False
 
 	if judge_if_playlist(url):
 		download_playlist(url, folder = folder)
@@ -447,7 +464,7 @@ def print_welcome():
 	print('* 3.可以专辑封面，但是需要电脑有lame库。如果没有，可以自动安装(需要系统有包管理工具Homebrew)\t*')
 	print('* 4.可以下载歌曲MV，默认下载最高分辨率的MV。 TODO:增加MV分辨率下载选项。\t\t\t*')
 	print('* 5.快捷方式:NetEaseMusic [url] [folder] //表示将连接url对应的文件下载到指定目录folder\t\t*')
-	print('* 6.版本:V 0.4.6\t\t\t\t\t\t\t\t\t\t*')
+	print('* 6.版本:{}\t\t\t\t\t\t\t\t\t\t*'.format(__VERSION__))
 	print('* 7.编译日期: {}\t\t\t\t\t\t\t\t\t*'.format(__DATE__))
 	print('* 8.作者: AnarL.(anar930906@gmail.com)\t\t\t\t\t\t\t\t*')
 	print('*'*97)

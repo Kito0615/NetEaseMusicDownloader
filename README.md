@@ -10,6 +10,11 @@
 >
 > **NOTE**: With new source from [QQMusic](http://y.qq.com) added, the source API is get from ite [webpage](http://y.qq.com), **all right revserved by [QQMusic](http://y.qq.com)**. This was **only for study**.
 
+#### Update: 2018-06-14
+
+1. Add ask for "Add to iTunes automatically".
+2. Fixed break down when file exists or search in QQMusic failed.
+
 #### Update:2018-05-28
 
 1. Use new non-offcial api which get from the web replaced the old api.
