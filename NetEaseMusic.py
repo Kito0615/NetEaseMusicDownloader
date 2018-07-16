@@ -14,6 +14,9 @@
 import requests, json, re, os
 import subprocess, sys, time, datetime
 
+from Crypto.Cipher import AES
+import base64
+
 __DATE__ = '2018年6月14日'
 __VERSION__ = 'V 0.4.8'
 
@@ -44,6 +47,28 @@ http_error = {
 	505 : 'HTTP版本未被支持'
 
 }
+
+def get_params(text):
+	first_key = '0CoJUm6Qyw8W8jud'
+	second_key = 'FFFFFFFFFFFFFFFF'
+	h_encText = AES_encrypt(text, first_key)
+	h_encText = AES_encrypt(h_encText, second_key)
+
+	return h_encText
+
+def get_encSecKey():
+	encSecKey = '257348aecb5e556c066de214e531faadd1c55d814f9be95fd06d6bff9f4c7a41f831f6394d5a3fd2e3881736d94a02ca919d952872e7d0a50ebfa1769a7a62d512f5f1ca21aec60bc3819a9c3ffca5eca9a0dba6d6f7249b06f5965ecfff3695b54e1c28f3f624750ed39e7de08fc8493242e26dbc4484a01c76f739e135637c'
+	return encSecKey
+
+def AES_encrypt(text, key):
+	iv = '0102030405060708'
+	pad = 16 - len(text) % 16
+	text = text + pad * chr(pad)
+	encryptor = AES.new(key, AES.MODE_CBC, iv)
+	encrypt_text = encryptor.encrypt(text)
+	encrypt_text = base64.b64encode(encrypt_text)
+	encrypt_text = str(encrypt_text, encoding = 'utf-8')
+	return encrypt_text
 
 def get_response(url):
 	res = requests.get(url, headers = {'User-Agent' :'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.13; rv:59.0) Gecko/20100101 Firefox/59.0'})
@@ -183,9 +208,21 @@ def download_music(url, folder = ''):
 	if not type_id:
 		print('❌ :解析歌曲或播放列表ID失败')
 		return
+
 	music_obj = get_song_name_album_poster(type_id)
 	if not music_obj.title:
 		return
+
+	# This section is for test official encryption.
+	first_param = '{ids:"[%s]", br:"128000", csrf_token:""}'%type_id
+	data = {'params' : get_params(first_param).encode('utf-8'), 'encSecKey' : get_encSecKey()}
+	he = {"Referer" : "http://music.163.com", 'Host' : 'music.163.com', 'User-Agent' : 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.12; rv:61.0) Gecko/20100101 Firefox/61.0', 'Accept' : 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'}
+	try:		
+		res = requests.post('http://music.163.com/weapi/song/enhance/player/url?csrf_token=', headers = he, data = data)
+		print(res.text)
+	except Exception as e:
+		print(e)
+	#
 
 	api = 'https://api.imjad.cn/cloudmusic?type=song&id={}&br=320000'.format(type_id)
 	json_obj = get_response(api)
