@@ -10,6 +10,11 @@
 >
 > **NOTE**: With new source from [QQMusic](http://y.qq.com) added, the source API is get from ite [webpage](http://y.qq.com), **all right revserved by [QQMusic](http://y.qq.com)**. This was **only for study**.
 
+#### Update: 2018-07-17
+
+1. Add API from official website crack.
+2. Add song best bit rate detect.
+
 #### Update: 2018-06-14
 
 1. Add ask for "Add to iTunes automatically".
@@ -104,3 +109,4 @@ There are a few ways to execute the binary when you copy to `/usr/local/bin`:
 [License](https://github.com/Kito0615/NetEaseMusicDownloader/blob/master/MIT.md)
 
 [FFMPEG](http://ffmpeg.org)
+
