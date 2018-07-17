@@ -328,7 +328,7 @@ def convert_to_mp3(other_media):
 
 	print('converting {origin} to {mp3}'.format(origin = other_media, mp3 = out_file))
 
-	out_bytes = subprocess.Popen(['ffmpeg', '-i', other_media, '-c:a', 'libmp3lame', '-aq', '2', out_file])
+	out_bytes = subprocess.check_output(['ffmpeg', '-i', other_media, '-c:a', 'libmp3lame', '-aq', '2', out_file])
 	print(out_bytes)
 
 	return out_file
@@ -387,7 +387,7 @@ def download_file(file_url, folder = '', export_file_name = None, extension = No
 	return file
 
 def install_lame():
-	ret = subprocess.Popen(['brew', 'install', 'lame'])
+	ret = subprocess.check_output(['brew', 'install', 'lame'])
 	print(ret)
 
 
@@ -397,8 +397,10 @@ def add_poster(poster, title, artists, album, year, track, music, br):
 		install_lame()
 		
 	try:
-		out_bytes = subprocess.Popen(['lame', '--tt', title, '--ta', artists, '--tl', album, '--ty', str(year), '--tc', str(track), '--tg', '13', '--ti', poster, '-b', br, music])
+		params = ['lame', '--tt', title, '--ta', artists, '--tl', album, '--ty', str(year), '--tc', str(track), '--tg', '13', '--ti', poster, '-b', str(br), music]
+		out_bytes = subprocess.check_output(params)
 		print(out_bytes.decode('utf-8'))
+		
 		if remove_file(poster):
 			print('删除封面文件成功。')
 		if remove_file(music):
