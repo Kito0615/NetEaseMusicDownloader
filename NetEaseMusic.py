@@ -17,8 +17,8 @@ import subprocess, sys, time, datetime
 from Crypto.Cipher import AES
 import base64
 
-__DATE__ = '2018年6月14日'
-__VERSION__ = 'V 0.4.8'
+__DATE__ = '2018年7月17日'
+__VERSION__ = 'V 0.5.0'
 
 http_error = {
 	400 : '请求错误',
