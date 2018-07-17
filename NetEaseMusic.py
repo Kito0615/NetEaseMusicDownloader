@@ -108,9 +108,24 @@ def get_song_name_album_poster(type_id):
 	year = year_of_timestamp(album_obj['publishTime'] / 1000)
 	track = song_obj['no']
 	poster = album_obj['picUrl']
+	br = get_music_best_bitrate(song_obj)
 
-	obj = Music(song_name, singers, album, year, track, poster)
+	obj = Music(song_name, singers, album, year, track, poster, br)
 	return obj
+
+def get_music_best_bitrate(song_obj):
+	br = 96000
+	if 'hMusic' in song_obj:
+		br = song_obj['hMusic']['bitrate']
+	elif 'mMusic' in song_obj:
+		br = song_obj['mMusic']['bitrate']
+	elif 'lMusic' in song_obj:
+		br = song_obj['lMusic']['bitrate']
+	elif 'bMusic' in song_obj:
+		br = song_obj['bMusic']['bitrate']
+
+	return br
+
 
 def get_max_size(size_keys):
 	max_size = 0
@@ -134,6 +149,32 @@ def get_mv_info(type_id):
 	mv_name = mv_info['name']
 
 	return (default_mv_url, mv_name)
+
+def get_music_url_with_official_api(type_id, br):
+	# This section is for test official encryption.
+	print('从官方获取歌曲下载链接...')
+	first_param = '{ids:"[%s]", br:"%s", csrf_token:""}'%(type_id, br)
+	data = {'params' : get_params(first_param).encode('utf-8'), 'encSecKey' : get_encSecKey()}
+	he = {"Referer" : "http://music.163.com", 'Host' : 'music.163.com', 'User-Agent' : 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.12; rv:61.0) Gecko/20100101 Firefox/61.0', 'Accept' : 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'}
+	res = None
+	try:		
+		res = requests.post('http://music.163.com/weapi/song/enhance/player/url?csrf_token=', headers = he, data = data)
+	except Exception as e:
+		print(e)
+	#
+	d = json.loads(res.text)
+	if d['code'] == 200:
+		return d['data'][0]['url']
+	return None
+
+def get_music_url_with_3rd_party_api(type_id, br):
+	print('从第三方获取歌曲下载链接...')
+	api = 'https://api.imjad.cn/cloudmusic?type=song&id={}&br={}'.format(type_id, br)
+	json_obj = get_response(api)
+	if not json_obj:
+		print('❌ :响应错误')
+		return None
+	return json_obj['data'][0]['url']
 
 def get_playlist_songs(type_id, folder = ''):
 	api = 'http://music.163.com/api/playlist/detail?id={}'.format(type_id)
@@ -213,24 +254,13 @@ def download_music(url, folder = ''):
 	if not music_obj.title:
 		return
 
-	# This section is for test official encryption.
-	first_param = '{ids:"[%s]", br:"128000", csrf_token:""}'%type_id
-	data = {'params' : get_params(first_param).encode('utf-8'), 'encSecKey' : get_encSecKey()}
-	he = {"Referer" : "http://music.163.com", 'Host' : 'music.163.com', 'User-Agent' : 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.12; rv:61.0) Gecko/20100101 Firefox/61.0', 'Accept' : 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'}
-	try:		
-		res = requests.post('http://music.163.com/weapi/song/enhance/player/url?csrf_token=', headers = he, data = data)
-		print(res.text)
-	except Exception as e:
-		print(e)
-	#
-
-	api = 'https://api.imjad.cn/cloudmusic?type=song&id={}&br=320000'.format(type_id)
-	json_obj = get_response(api)
-	if not json_obj:
-		print('❌ :响应错误')
-		return
+	
 	print('开始下载音乐:')
-	audio = download_file(json_obj['data'][0]['url'],folder = folder,  export_file_name = music_obj.title)
+	url = get_music_url_with_official_api(type_id, music_obj.br)
+	if url is None:
+		url = get_music_url_with_3rd_party_api(type_id, music_obj.br)
+
+	audio = download_file(url, folder = folder,  export_file_name = music_obj.title)
 	print('------>')
 	if not audio:
 		audio = try_get_file_in_qq_music(music_obj.title, music_obj.artists)
@@ -245,7 +275,7 @@ def download_music(url, folder = ''):
 		audio_name = audio.name
 	else :
 		audio_name = audio
-	add_poster(poster.name, music_obj.title, music_obj.artists, music_obj.album, music_obj.year, music_obj.track, audio_name)
+	add_poster(poster.name, music_obj.title, music_obj.artists, music_obj.album, music_obj.year, music_obj.track, audio_name, music_obj.br)
 
 
 QQ_music_search_tip_api = 'https://c.y.qq.com/soso/fcgi-bin/client_search_cp?ct=24&qqmusic_ver=1298&new_json=1&remoteplace=txt.yqq.song&searchid=56069080114511262&t=0&aggr=1&cr=1&catZhida=1&lossless=0&flag_qc=0&p={page}&n=20&w={song_name}&g_tk=5381&loginUin=0&hostUin=0&format=json&inCharset=utf8&outCharset=utf-8&notice=0&platform=yqq&needNewCode=0'
@@ -254,7 +284,7 @@ QQ_music_song_dl_api = 'http://dl.stream.qqmusic.qq.com/{file_name}?vkey={v_key}
 
 def search_qq_music(music_name, singer):
 
-	print('search in qq music...')
+	print('开始搜索QQ音乐...')
 	url = QQ_music_search_tip_api.format(page = 1, song_name = music_name)
 	json_obj = get_response(url)
 	songs = json_obj['data']['song']['list']
@@ -361,13 +391,13 @@ def install_lame():
 	print(ret)
 
 
-def add_poster(poster, title, artists, album, year, track, music):
+def add_poster(poster, title, artists, album, year, track, music, br):
 	ret = os.system('lame --version')
 	if ret != 0:
 		install_lame()
 		
 	try:
-		out_bytes = subprocess.Popen(['lame', '--tt', title, '--ta', artists, '--tl', album, '--ty', str(year), '--tc', str(track), '--tg', '13', '--ti', poster, '-b', '320000', music])
+		out_bytes = subprocess.Popen(['lame', '--tt', title, '--ta', artists, '--tl', album, '--ty', str(year), '--tc', str(track), '--tg', '13', '--ti', poster, '-b', br, music])
 		print(out_bytes.decode('utf-8'))
 		if remove_file(poster):
 			print('删除封面文件成功。')
@@ -443,13 +473,14 @@ def year_of_timestamp(unix_time):
 	return time.localtime(unix_time)[0]
 
 class Music():
-	def __init__(self, title, artists, album, year, track, poster):
+	def __init__(self, title, artists, album, year, track, poster, br):
 		self.title = title
 		self.artists = ','.join(artists)
 		self.album = album
 		self.year = year
 		self.track = track
 		self.poster = poster
+		self.br = br
 
 class ProgressBar(object):
 	def __init__(self, title, count = 0.0, run_status = None, fin_status = None, total = 100.0, unit = '', sep = '/', chunk_size = 1.0):
