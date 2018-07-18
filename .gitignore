@@ -2,4 +2,4 @@
 .mp3
 .jpg
 .png
-
+__pycache__/*
