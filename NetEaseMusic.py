@@ -73,7 +73,7 @@ def AES_encrypt(text, key):
 def get_response(url):
 	res = requests.get(url, headers = {'User-Agent' :'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.13; rv:59.0) Gecko/20100101 Firefox/59.0'})
 	if res.status_code != 200:
-		print('Error:', http_error[res.status_code])
+		print('网络错误:', http_error[res.status_code])
 		print(url)
 	return json.loads(res.text)
 
@@ -304,8 +304,6 @@ def get_qq_music_dl_info(mid):
 	url = QQ_music_song_info_api.format(song_id = mid)
 	json_obj = get_response(url)
 
-	print(json_obj)
-
 	song_obj = json_obj['data']['items'][0]
 	return (song_obj['vkey'], song_obj['filename'])
 
@@ -326,7 +324,7 @@ def convert_to_mp3(other_media):
 
 	out_file = '.'.join(other_media.split('.')[:-1]) + '.mp3'
 
-	print('converting {origin} to {mp3}'.format(origin = other_media, mp3 = out_file))
+	print('正在转换{origin} 为 {mp3}'.format(origin = other_media, mp3 = out_file))
 
 	out_bytes = subprocess.check_output(['ffmpeg', '-i', other_media, '-c:a', 'libmp3lame', '-aq', '2', out_file])
 	print(out_bytes)
@@ -335,7 +333,7 @@ def convert_to_mp3(other_media):
 
 
 def try_get_file_in_qq_music(song_name, singer):
-	print('try to search in qq music.')
+	print('尝试搜索QQ音乐...')
 	try:
 		music_id = search_qq_music(song_name, singer)
 		(song_v_key, song_file_name) = get_qq_music_dl_info(music_id)
