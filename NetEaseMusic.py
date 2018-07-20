@@ -437,9 +437,9 @@ def main():
 		url = sys.argv[1]
 		folder = sys.argv[2]
 
-	i = input('请问是否直接添加到iTunes？(y or n)')
+	i = input('请问是否直接添加到iTunes？(y or n, 默认y)')
 	print(i)
-	if i.lower() == 'y':
+	if i.lower() in ['y', 'yes'] or len(i) == 0:
 		ADD_TO_ITUNES = True
 	else:
 		ADD_TO_ITUNES = False
