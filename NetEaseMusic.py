@@ -115,13 +115,13 @@ def get_song_name_album_poster(type_id):
 
 def get_music_best_bitrate(song_obj):
 	br = 96000
-	if 'hMusic' in song_obj:
+	if 'hMusic' in song_obj and song_obj['hMusic'] is not None:
 		br = song_obj['hMusic']['bitrate']
-	elif 'mMusic' in song_obj:
+	elif 'mMusic' in song_obj and song_obj['mMusic'] is not None:
 		br = song_obj['mMusic']['bitrate']
-	elif 'lMusic' in song_obj:
+	elif 'lMusic' in song_obj and song_obj['lMusic'] is not None:
 		br = song_obj['lMusic']['bitrate']
-	elif 'bMusic' in song_obj:
+	elif 'bMusic' in song_obj and song_obj['bMusic'] is not None:
 		br = song_obj['bMusic']['bitrate']
 
 	return br
