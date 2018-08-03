@@ -13,6 +13,7 @@
 
 import requests, json, re, os
 import subprocess, sys, time, datetime
+from config import http_error, music_genre
 
 from Crypto.Cipher import AES
 import base64
@@ -20,33 +21,10 @@ import base64
 __DATE__ = '2018年7月17日'
 __VERSION__ = 'V 0.5.0'
 
-http_error = {
-	400 : '请求错误',
-	401 : '未授权',
-	402 : '要求付费',
-	403 : '服务器禁止',
-	404 : '无法找到文件',
-	405 : '资源被禁止',
-	406 : '无法接受请求',
-	407 : '要求代理身份验证',
-	408 : '请求超时',
-	409 : '请求冲突',
-	410 : '永远不可用',
-	411 : '要求的长度',
-	412 : '先决条件失败',
-	413 : '请求实例太长',
-	414 : '请求url太长',
-	415 : '不支持的媒体类型',
-	416 : '无法满足的请求范围',
-	417 : '失败的预期',
-	500 : '内部服务器错误',
-	501 : '未实现',
-	502 : '网关错误',
-	503 : '不可用的服务',
-	504 : '网关超时',
-	505 : 'HTTP版本未被支持'
-
-}
+def get_genre_code(genre):
+	if genre in music_genre.keys():
+		return music_genre[genre]
+	return 13
 
 def get_params(text):
 	first_key = '0CoJUm6Qyw8W8jud'
@@ -109,8 +87,12 @@ def get_song_name_album_poster(type_id):
 	track = song_obj['no']
 	poster = album_obj['picUrl']
 	br = get_music_best_bitrate(song_obj)
+	eqs = json_obj['equalizers'].values()
+	genre = '13'
+	if len(eqs) > 0:
+		genre = get_genre_code(eqs[0])
 
-	obj = Music(song_name, singers, album, year, track, poster, br)
+	obj = Music(song_name, singers, album, year, track, poster, br, genre)
 	return obj
 
 def get_music_best_bitrate(song_obj):
@@ -275,7 +257,7 @@ def download_music(url, folder = ''):
 		audio_name = audio.name
 	else :
 		audio_name = audio
-	add_poster(poster.name, music_obj.title, music_obj.artists, music_obj.album, music_obj.year, music_obj.track, audio_name, music_obj.br)
+	add_poster(poster.name, music_obj.title, music_obj.artists, music_obj.album, music_obj.year, music_obj.track, audio_name, music_obj.br, music_obj.genre)
 
 
 QQ_music_search_tip_api = 'https://c.y.qq.com/soso/fcgi-bin/client_search_cp?ct=24&qqmusic_ver=1298&new_json=1&remoteplace=txt.yqq.song&searchid=56069080114511262&t=0&aggr=1&cr=1&catZhida=1&lossless=0&flag_qc=0&p={page}&n=20&w={song_name}&g_tk=5381&loginUin=0&hostUin=0&format=json&inCharset=utf8&outCharset=utf-8&notice=0&platform=yqq&needNewCode=0'
@@ -389,13 +371,13 @@ def install_lame():
 	print(ret)
 
 
-def add_poster(poster, title, artists, album, year, track, music, br):
+def add_poster(poster, title, artists, album, year, track, music, br, genre):
 	ret = os.system('lame --version')
 	if ret != 0:
 		install_lame()
 		
 	try:
-		params = ['lame', '--tt', title, '--ta', artists, '--tl', album, '--ty', str(year), '--tc', str(track), '--tg', '13', '--ti', poster, '-b', str(br), music]
+		params = ['lame', '--tt', title, '--ta', artists, '--tl', album, '--ty', str(year), '--tc', str(track), '--tg', genre, '--ti', poster, '-b', str(br), music]
 		out_bytes = subprocess.check_output(params)
 		print(out_bytes.decode('utf-8'))
 		
@@ -473,7 +455,7 @@ def year_of_timestamp(unix_time):
 	return time.localtime(unix_time)[0]
 
 class Music():
-	def __init__(self, title, artists, album, year, track, poster, br):
+	def __init__(self, title, artists, album, year, track, poster, br, genre):
 		self.title = title
 		self.artists = ','.join(artists)
 		self.album = album
@@ -481,6 +463,7 @@ class Music():
 		self.track = track
 		self.poster = poster
 		self.br = br
+		self.genre = genre
 
 class ProgressBar(object):
 	def __init__(self, title, count = 0.0, run_status = None, fin_status = None, total = 100.0, unit = '', sep = '/', chunk_size = 1.0):
