@@ -18,8 +18,8 @@ from config import http_error, music_genre
 from Crypto.Cipher import AES
 import base64
 
-__DATE__ = '2018年7月17日'
-__VERSION__ = 'V 0.5.0'
+__DATE__ = '2018年8月8日'
+__VERSION__ = 'V 0.5.2'
 
 def get_genre_code(genre):
 	if genre in music_genre.keys():
@@ -87,7 +87,7 @@ def get_song_name_album_poster(type_id):
 	track = song_obj['no']
 	poster = album_obj['picUrl']
 	br = get_music_best_bitrate(song_obj)
-	eqs = json_obj['equalizers'].values()
+	eqs = list(json_obj['equalizers'].values())
 	genre = '13'
 	if len(eqs) > 0:
 		genre = get_genre_code(eqs[0])
