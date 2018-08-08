@@ -71,7 +71,7 @@ def get_song_name_album_poster(type_id):
 		return None
 
 	song_obj = json_obj['songs'][0]
-	song_name = song_obj['name']
+	song_name = song_obj['name'].replace('/', '_')
 	artists = song_obj['artists']
 	singers = []
 	for ar in artists:
