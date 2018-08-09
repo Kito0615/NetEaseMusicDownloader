@@ -2,13 +2,18 @@
 
 [中文说明](https://github.com/Kito0615/NetEaseMusicDownloader/blob/master/README_CN.md) 
 
-![](https://img.shields.io/badge/Platform-Python3-009eff.svg) ![](https://img.shields.io/badge/Windows-Supported-00efff.svg)  ![](https://img.shields.io/badge/MacOS-Supported-00efff.svg) ![](https://img.shields.io/badge/Linux-Supported-00efff.svg)    ![](https://img.shields.io/badge/WebAPI-Failed-ee0000.svg)
+![](https://img.shields.io/badge/Platform-Python3-009eff.svg) ![](https://img.shields.io/badge/Windows-Supported-00efff.svg)  ![](https://img.shields.io/badge/MacOS-Supported-00efff.svg) ![](https://img.shields.io/badge/Linux-Supported-00efff.svg) ![](https://img.shields.io/badge/WebAPI-Failed-ee0000.svg)
 
 > **NOTE:** In this script, I used some api via [AD's API](https://api.imjad.cn/). Thanks. This 
 > script is for personal use only. It cannot be used for any commercial 
 > activities. All legal issues are not related to the author.
 >
 > **NOTE**: With new source from [QQMusic](http://y.qq.com) added, the source API is get from ite [webpage](http://y.qq.com), **all right revserved by [QQMusic](http://y.qq.com)**. This was **only for study**.
+
+#### Update:2018-08-09
+
+1. Add Lame Tag for iTunes.
+2. Now offcial web api failed, still using thrid-part API from AD. I will fix this ASAP.
 
 #### Update: 2018-07-17
 
