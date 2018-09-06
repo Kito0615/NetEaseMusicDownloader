@@ -27,7 +27,7 @@ from Crypto.Cipher import AES
 import base64
 
 __DATE__ = '2018年9月6日'
-__VERSION__ = 'V 0.6.1'
+__VERSION__ = 'V 0.6.2'
 
 URL_TYPE_KEY = "url_type"
 URL_TYPE_SINGLE = "single"
@@ -553,7 +553,6 @@ def parse_option_values():
 
 def main():
     options = parse_option_values()
-    print(options)
     if options[URL_KEY].startswith('http'):
         pass
     else:
