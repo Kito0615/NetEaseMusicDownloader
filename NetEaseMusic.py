@@ -13,6 +13,7 @@
 
 import requests, json, re, os
 import subprocess, sys, time, datetime
+from config import http_error, music_genre
 
 from Crypto.Cipher import AES
 import base64
@@ -47,6 +48,14 @@ http_error = {
     505: 'HTTP版本未被支持'
 
 }
+__DATE__ = '2018年8月8日'
+__VERSION__ = 'V 0.5.2'
+
+
+def get_genre_code(genre):
+    if genre in music_genre.keys():
+        return music_genre[genre]
+    return 13
 
 
 def get_params(text):
@@ -99,6 +108,7 @@ def extract_id(input_url):
 
 
 def get_song_name_album_poster(type_id):
+<<<<<<< HEAD
     api = 'http://music.163.com/api/song/detail?ids=[{}]'.format(type_id)
     json_obj = get_response(api)
     if not json_obj:
@@ -126,6 +136,38 @@ def get_song_name_album_poster(type_id):
     obj = Music(song_name, singers, album, year, track, poster, br)
     return obj
 
+=======
+	api = 'http://music.163.com/api/song/detail?ids=[{}]'.format(type_id)
+	json_obj = get_response(api)
+	if not json_obj:
+		print('❌：获取歌曲详细信息失败！')
+		return None
+
+	song_obj = json_obj['songs'][0]
+	song_name = song_obj['name'].replace('/', '_')
+	artists = song_obj['artists']
+	singers = []
+	for ar in artists:
+		singers.append(ar['name'])
+
+	album_obj = None
+	if 'al' in song_obj.keys():
+		album_obj = song_obj['al']
+	elif 'album' in song_obj.keys():
+		album_obj = song_obj['album']
+	album = album_obj['name']
+	year = year_of_timestamp(album_obj['publishTime'] / 1000)
+	track = song_obj['no']
+	poster = album_obj['picUrl']
+	br = get_music_best_bitrate(song_obj)
+	eqs = list(json_obj['equalizers'].values())
+	genre = '13'
+	if len(eqs) > 0:
+		genre = get_genre_code(eqs[0])
+
+	obj = Music(song_name, singers, album, year, track, poster, br, genre)
+	return obj
+>>>>>>> 02d7ddb05d655abd0239c69512d846ec309a4aff
 
 def get_music_best_bitrate(song_obj):
     br = 96000
@@ -267,6 +309,7 @@ def download_mv(url, folder = ''):
 
 
 def download_music(url, folder = ''):
+<<<<<<< HEAD
     # pattern = http://music.163.com/#/song?id={}
     if len(folder) > 0 and not os.path.exists(folder):
         os.mkdir(folder)
@@ -301,6 +344,42 @@ def download_music(url, folder = ''):
     else :
         audio_name = audio
     add_poster(poster.name, music_obj.title, music_obj.artists, music_obj.album, music_obj.year, music_obj.track, audio_name, music_obj.br)
+=======
+	# pattern = http://music.163.com/#/song?id={}
+	if len(folder) > 0 and not os.path.exists(folder):
+		os.mkdir(folder)
+	type_id = extract_id(url)
+	if not type_id:
+		print('❌ :解析歌曲或播放列表ID失败')
+		return
+
+	music_obj = get_song_name_album_poster(type_id)
+	if not music_obj.title:
+		return
+
+	
+	print('开始下载音乐:')
+	url = get_music_url_with_official_api(type_id, music_obj.br)
+	if url is None:
+		url = get_music_url_with_3rd_party_api(type_id, music_obj.br)
+
+	audio = download_file(url, folder = folder,  export_file_name = music_obj.title)
+	print('------>')
+	if not audio:
+		audio = try_get_file_in_qq_music(music_obj.title, music_obj.artists)
+
+	if not audio:
+		return
+	print('开始下载封面:')
+	poster = download_file(music_obj.poster, folder = folder,  export_file_name = music_obj.title)
+	print('开始添加封面:')
+	audio_name = ''
+	if hasattr(audio, 'name'):
+		audio_name = audio.name
+	else :
+		audio_name = audio
+	add_poster(poster.name, music_obj.title, music_obj.artists, music_obj.album, music_obj.year, music_obj.track, audio_name, music_obj.br, music_obj.genre)
+>>>>>>> 02d7ddb05d655abd0239c69512d846ec309a4aff
 
 
 QQ_music_search_tip_api = 'https://c.y.qq.com/soso/fcgi-bin/client_search_cp?ct=24&qqmusic_ver=1298&new_json=1&remoteplace=txt.yqq.song&searchid=56069080114511262&t=0&aggr=1&cr=1&catZhida=1&lossless=0&flag_qc=0&p={page}&n=20&w={song_name}&g_tk=5381&loginUin=0&hostUin=0&format=json&inCharset=utf8&outCharset=utf-8&notice=0&platform=yqq&needNewCode=0'
@@ -427,6 +506,7 @@ def install_lame():
     print(ret)
 
 
+<<<<<<< HEAD
 def add_poster(poster, title, artists, album, year, track, music, br):
     ret = os.system('lame --version')
     if ret != 0:
@@ -463,6 +543,37 @@ def add_poster(poster, title, artists, album, year, track, music, br):
     except Exception as e:
         print(e)
 
+=======
+def add_poster(poster, title, artists, album, year, track, music, br, genre):
+	ret = os.system('lame --version')
+	if ret != 0:
+		install_lame()
+		
+	try:
+		params = ['lame', '--tt', title, '--ta', artists, '--tl', album, '--ty', str(year), '--tc', str(track), '--tg', genre, '--ti', poster, '-b', str(br), music]
+		out_bytes = subprocess.check_output(params)
+		print(out_bytes.decode('utf-8'))
+		
+		if remove_file(poster):
+			print('删除封面文件成功。')
+		if remove_file(music):
+			print('删除音乐文件成功。')
+
+		old_file = music + '.' + music.split('.')[-1]
+		if os.path.exists(old_file):
+			os.rename(old_file, music)
+
+		if ADD_TO_ITUNES == True:
+			ext = os.path.exists(os.path.expanduser('~/Music/iTunes/iTunes Media/Automatically Add to iTunes'))
+			new_name = ''
+			if ext == False:
+				new_name = os.path.expanduser('~/Music/iTunes/iTunes Media/Automatically Add to iTunes.localized/' + music.split('/')[-1])
+			else :
+				new_name = '~/Music/iTunes/iTunes Media/Automatically Add to iTunes/' + music.split('/')[-1]
+			os.rename(music, os.path.expanduser(new_name))
+	except Exception as e:
+		print(e)
+>>>>>>> 02d7ddb05d655abd0239c69512d846ec309a4aff
 
 def remove_file(file):
     if os.path.exists(file):
@@ -523,6 +634,7 @@ def year_of_timestamp(unix_time):
 
 
 class Music():
+<<<<<<< HEAD
     def __init__(self, title, artists, album, year, track, poster, br):
         self.title = title
         self.artists = ','.join(artists)
@@ -532,6 +644,17 @@ class Music():
         self.poster = poster
         self.br = br
 
+=======
+	def __init__(self, title, artists, album, year, track, poster, br, genre):
+		self.title = title
+		self.artists = ','.join(artists)
+		self.album = album
+		self.year = year
+		self.track = track
+		self.poster = poster
+		self.br = br
+		self.genre = genre
+>>>>>>> 02d7ddb05d655abd0239c69512d846ec309a4aff
 
 class ProgressBar(object):
     def __init__(self, title, count=0.0,

@@ -2,11 +2,16 @@
 
 [README.md](https://github.com/Kito0615/NetEaseMusicDownloader/blob/master/README.md) 
 
-![](https://img.shields.io/badge/Platform-Python3-009eff.svg) ![](https://img.shields.io/badge/Windows-Supported-00efff.svg)  ![](https://img.shields.io/badge/MacOS-Supported-00efff.svg) ![](https://img.shields.io/badge/Linux-Supported-00efff.svg)
+![](https://img.shields.io/badge/Platform-Python3-009eff.svg) ![](https://img.shields.io/badge/Windows-Supported-00efff.svg)  ![](https://img.shields.io/badge/MacOS-Supported-00efff.svg) ![](https://img.shields.io/badge/Linux-Supported-00efff.svg) ![](https://img.shields.io/badge/WebAPI-Failed-ee0000.svg)
 
 > **注意:** 这个脚本使用了[AD's API](https://api.imjad.cn/) 提供的接口，在此表示感谢. 这个脚本仅供个人学习交流使用，不能用于任何商业用途，所有法律问题均与作者无关。
 >
 > **注意**: 新添加的[QQ音乐](http://y.qq.com)的接口来自其网站，**版权归[QQ音乐](http://y.qq.com)所有**。仅供**学习交流**使用.
+
+#### 更新：2018-08-09
+
+1. 增加lame歌曲类别标签。
+2. 由于官方网页版API解析失败，现在使用的依然是三方API。我会尽快尝试修复。
 
 #### 更新: 2018-07-17
 
