@@ -10,6 +10,30 @@
 >
 > **NOTE**: With new source from [QQMusic](http://y.qq.com) added, the source API is get from ite [webpage](http://y.qq.com), **all right revserved by [QQMusic](http://y.qq.com)**. This was **only for study**.
 
+#### Update:2018-09-06
+
+1. **New version of Downloader.**Add some options for the script.
+
+2. Usage : `python3 NetEaseMusicDownloader.py ` `[OPTIONS]` `URL` or `NetEaseMusicDownloader`  `[OPTIONS]` `URL`
+
+3.  Option List:
+
+   ​	-h, —help 			: show help message.
+
+   ​	-s, —single			: specific the url is a single music.
+
+   ​	-l, —list				: specific the url is a list.
+
+   ​	-v, —video			: specific the url is a music video.
+
+   ​	-r, —range RANGE	: specific to download music in range.
+
+   ​						  RANGE format like '1,2, 5-7,18'
+
+   ​	-a, —auto 			: add to iTunes Library automatically.
+
+   ​	-f, —folder FOLDER	: specific the destination folder.
+
 #### Update:2018-08-09
 
 1. Add Lame Tag for iTunes.

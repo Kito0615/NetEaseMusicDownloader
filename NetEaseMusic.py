@@ -19,14 +19,24 @@ import os
 import subprocess
 import sys
 import time
+import getopt
 from config import http_error
 from config import music_genre
 
 from Crypto.Cipher import AES
 import base64
 
-__DATE__ = '2018年8月8日'
-__VERSION__ = 'V 0.5.2'
+__DATE__ = '2018年9月6日'
+__VERSION__ = 'V 0.6.1'
+
+URL_TYPE_KEY = "url_type"
+URL_TYPE_SINGLE = "single"
+URL_TYPE_LIST = "playlist"
+URL_TYPE_VIDEO = "video"
+LIST_RANGE_KEY = "list_range"
+ADD_TO_ITUNES_KEY = "add_to_itunes"
+FOLDER_PATH_KEY = "folder_path"
+URL_KEY = "url"
 
 
 def get_genre_code(genre):
@@ -184,7 +194,7 @@ def get_music_url_with_3rd_party_api(type_id, br):
     return json_obj['data'][0]['url']
 
 
-def get_playlist_songs(type_id, folder=''):
+def get_playlist_songs(type_id, folder='', range=''):
     api = 'http://music.163.com/api/playlist/detail?id={}'.format(type_id)
     json_obj = get_response(api)
     if not json_obj:
@@ -194,12 +204,20 @@ def get_playlist_songs(type_id, folder=''):
     # print(tracks)
     idx = 1
     total = len(tracks)
-    for track in tracks:
-        print('正在下载({}/{})'.format(idx, total))
-        url = 'http://music.163.com/#/song?id={}'.format(track)
-        download_music(url, folder=folder)
-        time.sleep(1)
-        idx += 1
+    if len(range) == 0:
+        for track in tracks:
+            print('正在下载({}/{})'.format(idx, total))
+            url = 'http://music.163.com/#/song?id={}'.format(track)
+            download_music(url, folder=folder)
+            time.sleep(1)
+            idx += 1
+    else:
+        for index in string_to_list(range):
+            track = tracks[index - 1]
+            print('正在下载({}/{})'.format(index, len(tracks)))
+            url = 'http://music.163.com/#/song?id={}'.format(track)
+            download_music(url, folder=folder)
+            time.sleep(1)
 
 
 def get_album_songs(type_id, folder=''):
@@ -230,10 +248,10 @@ def extract_playlist_ids(tracks_json):
     return ret_tracks
 
 
-def download_playlist(url, folder=''):
+def download_playlist(url, folder='', range=''):
     type_id = extract_id(url)
     print('开始解析歌单信息...')
-    get_playlist_songs(type_id, folder=folder)
+    get_playlist_songs(type_id, folder=folder, range=range)
 
 
 def download_album(url, folder=''):
@@ -448,20 +466,6 @@ def add_poster(poster, title, artists, album, year, track, music, br):
         if os.path.exists(old_file):
             os.rename(old_file, music)
 
-        if ADD_TO_ITUNES:
-            itunes_path = ('~/Music/iTunes/iTunes Media/'
-                           'Automatically Add to iTunes')
-            path = os.path.expanduser(itunes_path)
-            ext = os.path.exists(path)
-            new_name = ''
-            if not ext:
-                itunes_path = ('~/Music/iTunes/iTunes Media/A'
-                               'utomatically Add to iTunes.localized/')
-                new_name = os.path.expanduser(itunes_path +
-                                              music.split('/')[-1])
-            else:
-                new_name = itunes_path + music.split('/')[-1]
-            os.rename(music, os.path.expanduser(new_name))
     except Exception as e:
         print(e)
 
@@ -473,33 +477,118 @@ def remove_file(file):
     return False
 
 
+def string_to_list(s):
+    result = []
+    for part in s.split(','):
+        if '-' in part:
+            a, b = part.split('-')
+            a, b = int(a), int(b)
+            result.extend(range(a, b + 1))
+        else:
+            a = int(part)
+            result.append(a)
+    return result
+
+
+def get_itunes_library_path():
+    itunes_path = ('~/Music/iTunes/iTunes Media/'
+                   'Automatically Add to iTunes')
+    path = os.path.expanduser(itunes_path)
+    ext = os.path.exists(path)
+    if not ext:
+        itunes_path = ('~/Music/iTunes/iTunes Media/'
+                       'Automatically Add to iTunes.localized/')
+    return os.path.expanduser(itunes_path)
+
+
+def show_usage():
+    print('%s [-h|-l|-v|-s|-r|-a|-f] [--help|--list|--video|--single|--range|--all|--folder] url'
+          % (__file__))
+    print('Usage :')
+    print('\t-h, --help           : show this help message.')
+    print('\t-s, --single         : means the url will download is a single url.')
+    print('\t                       if not use this option, script will judge automatically.')
+    print('\t-l, --list           : means the url will download is a playlist url.')
+    print('\t                       if not use this option, script will judge automatically.')
+    print('\t-v, --video          : means the url will download is a music video url.')
+    print('\t                       if not use this option, script will judge automatically.')
+    print('\t-r, --range RANGE    : download the playlist in RANGE.')
+    print('\t                       RANGE supported format [start:end], [start:], [:end],')
+    print('\t                       starts with 1, ends with length of list.')
+    print('\t                       if not use this option, script will download all')
+    print('\t                       automatically.')
+    print('\t-a, --auto           : use this option to add download media to')
+    print('\t                       iTunes library automatically.')
+    print('\t                       if not use this option, script will donwload media to the')
+    print('\t                       FOLDER with -f|--folder option or the current directory if')
+    print('\t                       not use -f|--folder option too.')
+    print('\t-f, --folder FOLDER  : save downloaded media to FOLDER')
+    print('\t                       if not use this option, script will download media to the')
+    print('\t                       current directory or iTunes library path if -a|--auto used.')
+
+
+def parse_option_values():
+    opts, args = getopt.getopt(sys.argv[1:], 'hlsvr:af:',
+                               ['help', 'list', 'single', 'video', 'range=', 'auto', 'folder='])
+    options = {ADD_TO_ITUNES_KEY: False}
+    for key, value in opts:
+        if key in ('-h', '--help'):
+            show_usage()
+            sys.exit(0)
+        if key in ('-s', '--single'):
+            options[URL_TYPE_KEY] = URL_TYPE_SINGLE
+        if key in ('-l', '--list'):
+            options[URL_TYPE_KEY] = URL_TYPE_LIST
+        if key in ('-v', '--video'):
+            options[URL_TYPE_KEY] = URL_TYPE_VIDEO
+        if key in ('-a', '--auto'):
+            options[ADD_TO_ITUNES_KEY] = True
+        if key in ('-r', '--range'):
+            options[LIST_RANGE_KEY] = value
+        if key in ('-f', '--folder'):
+            options[FOLDER_PATH_KEY] = value
+    options[URL_KEY] = sys.argv[-1]
+    return options
+
+
 def main():
-    global ADD_TO_ITUNES
-    url = ''
-    folder = ''
-    if len(sys.argv) == 1:
-        url = input('请输入/粘贴歌曲网页地址.\n地址:')
-    elif len(sys.argv) == 2:
-        url = sys.argv[1]
-    elif len(sys.argv) == 3:
-        url = sys.argv[1]
-        folder = sys.argv[2]
-
-    i = input('请问是否直接添加到iTunes？(y or n, 默认y)')
-    print(i)
-    if i.lower() in ['y', 'yes'] or len(i) == 0:
-        ADD_TO_ITUNES = True
+    options = parse_option_values()
+    print(options)
+    if options[URL_KEY].startswith('http'):
+        pass
     else:
-        ADD_TO_ITUNES = False
-
-    if judge_if_playlist(url):
-        download_playlist(url, folder=folder)
-    elif judge_if_album(url):
-        download_album(url, folder=folder)
-    elif judge_if_mv(url):
-        download_mv(url, folder=folder)
+        print('Useage error.')
+        show_usage()
+        sys.exit(-1)
+    print_welcome()
+    output_folder = ''
+    if options[ADD_TO_ITUNES_KEY]:
+        output_folder = get_itunes_library_path()
+    elif FOLDER_PATH_KEY in options:
+        output_folder = os.path.expanduser(options[FOLDER_PATH_KEY])
     else:
-        download_music(url, folder=folder)
+        output_folder = os.getcwd()
+    print('output folder path : ' + output_folder)
+    range_str = ''
+    if LIST_RANGE_KEY in options:
+        range_str = options[LIST_RANGE_KEY]
+
+    if URL_TYPE_KEY in options:
+        if options[URL_TYPE_KEY] == URL_TYPE_SINGLE:
+            download_music(options[URL_KEY], folder=output_folder)
+        elif options[URL_TYPE_KEY] == URL_TYPE_LIST:
+            download_playlist(options[URL_KEY], folder=output_folder, range=range_str)
+        elif options[URL_TYPE_KEY] == URL_TYPE_VIDEO:
+            download_mv(options[URL_KEY], folder=output_folder)
+    else:
+        if judge_if_playlist(options[URL_KEY]):
+            download_playlist(options[URL_KEY], folder=output_folder, range=range_str)
+        elif judge_if_album(options[URL_KEY]):
+            download_album(options[URL_KEY], folder=output_folder)
+        elif judge_if_mv(options[URL_KEY]):
+            download_mv(options[URL_KEY], folder=output_folder)
+        else:
+            download_music(options[URL_KEY], folder=output_folder)
 
 
 def judge_if_playlist(url):
@@ -590,13 +679,14 @@ def print_welcome():
     print('*' * 97)
     print('* 1.本工具可以下载网易云音乐收费歌曲(单独付费除外，如霉霉的歌曲。)\t\t\t\t*')
     print('* 2.可以下载单曲，也可以下载播放列表，只需要复制单曲或播放列表的网页地址即可。\t\t\t*')
-    print('* 3.可以专辑封面，但是需要电脑有lame库。如果没有，可以自动安装(需要系统有包管理工具Homebrew)\t*')
-    print('* 4.可以下载歌曲MV，默认下载最高分辨率的MV。 TODO:增加MV分辨率下载选项。\t\t\t*')
-    print('* 5.快捷方式:NetEaseMusic [url] [folder]', end='')
+    print('* 3.可以下载播放列表的指定范围的歌曲，也可以下载整个播放列表。\t\t\t\t*')
+    print('* 4.可以专辑封面，但是需要电脑有lame库。如果没有，可以自动安装(需要系统有包管理工具Homebrew)\t*')
+    print('* 5.可以下载歌曲MV，默认下载最高分辨率的MV。 TODO:增加MV分辨率下载选项。\t\t\t*')
+    print('* 6.快捷方式:NetEaseMusic [url] [folder]', end='')
     print(' //表示将连接url对应的文件下载到指定目录folder\t\t*')
-    print('* 6.版本:{}\t\t\t\t\t\t\t\t\t\t*'.format(__VERSION__))
-    print('* 7.编译日期: {}\t\t\t\t\t\t\t\t\t*'.format(__DATE__))
-    print('* 8.作者: AnarL.(anar930906@gmail.com)\t\t\t\t\t\t\t\t*')
+    print('* 7.版本:{}\t\t\t\t\t\t\t\t\t\t*'.format(__VERSION__))
+    print('* 8.编译日期: {}\t\t\t\t\t\t\t\t\t*'.format(__DATE__))
+    print('* 9.作者: AnarL.(anar930906@gmail.com)\t\t\t\t\t\t\t\t*')
     print('*' * 97)
     print('* *注:请尊重版权，树立版权意识。\t\t\t\t\t\t\t\t*')
     print('*' * 97)
@@ -604,7 +694,6 @@ def print_welcome():
 
 if __name__ == '__main__':
     try:
-        print_welcome()
         main()
     except Exception as e:
         if e:
