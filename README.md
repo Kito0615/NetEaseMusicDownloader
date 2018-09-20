@@ -94,33 +94,10 @@
    NetEaseMusic
    ```
 
-   ​
 
 #### Usage:
 
-There are a few ways to execute the binary when you copy to `/usr/local/bin`:
-
-1. **Directly run command in terminal:**
-
-   ```shell
-   NetEaseMusic	
-   ```
-
-2. **Add the url follow the command:**
-
-   ```shell
-   NetEaseMusic [url]	
-   ```
-
-   This means download music from the following [url] page.
-
-3. **Add the folder and the url follow the command :**
-
-   ```shell
-   NetEaseMusic [url] [folder]
-   ```
-
-   This means download music from the following [url] page to the destination [folder].
+​	Check [Update:2018-09-06](#update2018-09-06)
 
 #### Envrionment:
 
@@ -133,4 +110,3 @@ There are a few ways to execute the binary when you copy to `/usr/local/bin`:
 [License](https://github.com/Kito0615/NetEaseMusicDownloader/blob/master/MIT.md)
 
 [FFMPEG](http://ffmpeg.org)
-
