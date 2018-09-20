@@ -16,23 +16,18 @@
 
 2. Usage : `python3 NetEaseMusicDownloader.py ` `[OPTIONS]` `URL` or `NetEaseMusicDownloader`  `[OPTIONS]` `URL`
 
-3.  Option List:
+3. Option List:
 
-   ​	-h, —help 			: show help message.
-
-   ​	-s, —single			: specific the url is a single music.
-
-   ​	-l, —list				: specific the url is a list.
-
-   ​	-v, —video			: specific the url is a music video.
-
-   ​	-r, —range RANGE	: specific to download music in range.
-
-   ​						  RANGE format like '1,2, 5-7,18'
-
-   ​	-a, —auto 			: add to iTunes Library automatically.
-
-   ​	-f, —folder FOLDER	: specific the destination folder.
+   | Option            | Instruction                              |
+   | ----------------- | ---------------------------------------- |
+   | -h, --help        | Show help message.                       |
+   | -s, --single      | Specific the URL is a single music.      |
+   | -l, --list        | Specific the URL is a list.              |
+   | -v, --video       | Specific the URL is a music video.       |
+   | -r, --range RANGE | Specific to download the music in RANGE. |
+   |                   | RANGE format like '1, 2, 5-7, 18'        |
+   | -a, --auto        | Add to iTunes Library automatically.     |
+   | -f, --folder      | Specific the destination folder.         |
 
 #### Update:2018-08-09
 

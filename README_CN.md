@@ -14,23 +14,18 @@
 
 2. 用法 : `python3 NetEaseMusicDownloader.py ` `[OPTIONS]` `URL` or `NetEaseMusicDownloader` `[OPTIONS]` `URL`
 
-3.  选项列表:
+3. 选项列表:
 
-   ​	-h, —help 			: 打印帮助信息
-
-   ​	-s, —single			: 指明给定的链接只有一首歌曲
-
-   ​	-l, —list				: 指明给定的链接是一个播放列表[歌单]
-
-   ​	-v, —video			: 指明给定的链接是一个音乐视频
-
-   ​	-r, —range RANGE	: 指定下载播放列表[歌单]的指定范围的歌曲
-
-   ​						  RANGE 模板 '1,2, 5-7,18'
-
-   ​	-a, —auto 			: 自动添加到iTunes歌曲库
-
-   ​	-f, —folder FOLDER	: 指定歌曲下载存储的目录
+   | 选项              | 描述                                 |
+   | ----------------- | ------------------------------------ |
+   | -h, --help        | 打印帮助信息                         |
+   | -s, --single      | 指明给定的链接只有一首歌曲           |
+   | -l, --list        | 指明给定的链接是一个播放列表(歌单)   |
+   | -v, --video       | 指明给定的链接是一个音频视频         |
+   | -r, --range RANGE | 指定下载播放列表(歌单)指定索引的歌曲 |
+   |                   | RANGE 模板 '1, 2, 5-7, 8'            |
+   | -a, --auto        | 自动添加到iTunes                     |
+   | -f, --folder      | 指定歌曲下载的存储目录               |
 
 #### 更新：2018-08-09
 
