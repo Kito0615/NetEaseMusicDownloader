@@ -81,16 +81,16 @@ def get_response(url):
     ua = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.13; rv:59.0) Gecko/20100101 Firefox/59.0'
     res = requests.get(url, headers={'User-Agent': ua})
     if res.status_code != 200:
-        print('网络错误:', http_error[res.status_code])
+        print('Network Error:', http_error[res.status_code])
         print(url)
     return json.loads(res.text)
 
 
 def extract_id(input_url):
-    print('匹配ID...')
+    print('Matching ID...')
     match = re.search(r'id=\d{2,12}', input_url)
     if match:
-        print('取得ID：', match.group(0)[3:])
+        print('Obtain ID：', match.group(0)[3:])
         return match.group(0)[3:]
     return None
 
@@ -99,7 +99,7 @@ def get_song_name_album_poster(type_id):
     api = 'http://music.163.com/api/song/detail?ids=[{}]'.format(type_id)
     json_obj = get_response(api)
     if not json_obj:
-        print('❌：获取歌曲详细信息失败！')
+        print('❌：Failed to get song details！')
         return None
 
     song_obj = json_obj['songs'][0]
@@ -151,7 +151,7 @@ def get_mv_info(type_id):
     api = 'https://api.imjad.cn/cloudmusic/?type=mv&id={}'.format(type_id)
     json_obj = get_response(api)
     if not json_obj:
-        print('❌ :获取MV信息失败')
+        print('❌ :Failed to get MV details!')
         return None
 
     mv_info = json_obj['data']
@@ -164,7 +164,7 @@ def get_mv_info(type_id):
 
 def get_music_url_with_official_api(type_id, br):
     # This section is for test official encryption.
-    print('从官方获取歌曲下载链接...')
+    print('Downloading song from official API...')
     first_param = '{ids:"[%s]", br:"%s", csrf_token:""}' % (type_id, br)
     data = {'params': get_params(first_param).encode('utf-8'), 'encSecKey': get_encSecKey()}
     ua = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.13; rv:59.0) Gecko/20100101 Firefox/59.0'
@@ -185,11 +185,11 @@ def get_music_url_with_official_api(type_id, br):
 
 
 def get_music_url_with_3rd_party_api(type_id, br):
-    print('从第三方获取歌曲下载链接...')
+    print('Downloading song from 3rd party API...')
     api = 'https://api.imjad.cn/cloudmusic?type=song&id={}&br={}'.format(type_id, br)
     json_obj = get_response(api)
     if not json_obj:
-        print('❌ :响应错误')
+        print('❌ :Response Error')
         return None
     return json_obj['data'][0]['url']
 
@@ -198,7 +198,7 @@ def get_playlist_songs(type_id, folder='', range=''):
     api = 'http://music.163.com/api/playlist/detail?id={}'.format(type_id)
     json_obj = get_response(api)
     if not json_obj:
-        print('❌：响应错误')
+        print('❌：Response Error')
         return
     tracks = extract_playlist_ids(json_obj['result']['tracks'])
     # print(tracks)
@@ -206,7 +206,7 @@ def get_playlist_songs(type_id, folder='', range=''):
     total = len(tracks)
     if len(range) == 0:
         for track in tracks:
-            print('正在下载({}/{})'.format(idx, total))
+            print('Downloading({}/{})'.format(idx, total))
             url = 'http://music.163.com/#/song?id={}'.format(track)
             download_music(url, folder=folder)
             time.sleep(1)
@@ -214,7 +214,7 @@ def get_playlist_songs(type_id, folder='', range=''):
     else:
         for index in string_to_list(range):
             track = tracks[index - 1]
-            print('正在下载({}/{})'.format(index, len(tracks)))
+            print('Downloading({}/{})'.format(index, len(tracks)))
             url = 'http://music.163.com/#/song?id={}'.format(track)
             download_music(url, folder=folder)
             time.sleep(1)
@@ -224,7 +224,7 @@ def get_album_songs(type_id, folder=''):
     api = 'https://api.imjad.cn/cloudmusic/?type=album&id={}'.format(type_id)
     json_obj = get_response(api)
     if not json_obj:
-        print('❌：响应错误')
+        print('❌：Response Error')
         return
 
     tracks = extract_playlist_ids(json_obj['songs'])
@@ -233,7 +233,7 @@ def get_album_songs(type_id, folder=''):
     total = len(tracks)
 
     for track in tracks:
-        print('正在下载《{}》({}/{})'.format(album_name, idx, total))
+        print('Downloading《{}》({}/{})'.format(album_name, idx, total))
         url = 'http://music.163.com/#/song?id={}'.format(track)
         download_music(url, folder)
         time.sleep(1)
@@ -250,22 +250,22 @@ def extract_playlist_ids(tracks_json):
 
 def download_playlist(url, folder='', range=''):
     type_id = extract_id(url)
-    print('开始解析歌单信息...')
+    print('Start parsing song list info...')
     get_playlist_songs(type_id, folder=folder, range=range)
 
 
 def download_album(url, folder=''):
     type_id = extract_id(url)
-    print('开始解析专辑信息...')
+    print('Start parsing album info...')
     get_album_songs(type_id, folder=folder)
 
 
 def download_mv(url, folder=''):
     # pattern = https://music.163.com/#/mv?id={}
-    print('开始下载MV...')
+    print('Downloading MV...')
     type_id = extract_id(url)
     if not type_id:
-        print('❌ :解析MV视频ID失败')
+        print('❌ :Parsing of MV ID failed')
         return
     (mv_url, mv_name) = get_mv_info(type_id)
     download_file(mv_url, folder=folder, export_file_name=mv_name)
@@ -277,14 +277,14 @@ def download_music(url, folder=''):
         os.mkdir(folder)
     type_id = extract_id(url)
     if not type_id:
-        print('❌ :解析歌曲或播放列表ID失败')
+        print('❌ :Parsing of song or playlist ID failed')
         return
 
     music_obj = get_song_name_album_poster(type_id)
     if not music_obj.title:
         return
 
-    print('开始下载音乐:')
+    print('Downloading music:')
     url = get_music_url_with_official_api(type_id, music_obj.br)
     if url is None:
         url = get_music_url_with_3rd_party_api(type_id, music_obj.br)
@@ -296,9 +296,9 @@ def download_music(url, folder=''):
 
     if not audio:
         return
-    print('开始下载封面:')
+    print('Downloading Coverart:')
     poster = download_file(music_obj.poster, folder=folder, export_file_name=music_obj.title)
-    print('开始添加封面:')
+    print('Adding Coverart:')
     audio_name = ''
     if hasattr(audio, 'name'):
         audio_name = audio.name
@@ -330,7 +330,7 @@ QQ_music_song_dl_api = ('http://dl.stream.qqmusic.qq.com'
 
 def search_qq_music(music_name, singer):
 
-    print('开始搜索QQ音乐...')
+    print('Searching on QQ Music...')
     url = QQ_music_search_tip_api.format(page=1, song_name=music_name)
     json_obj = get_response(url)
     songs = json_obj['data']['song']['list']
@@ -359,7 +359,7 @@ def download_qq_music(song_vkey, song_title, song_file_name):
     url = QQ_music_song_dl_api.format(file_name=song_file_name,
                                       v_key=song_vkey)
     if len(song_vkey) == 0:
-        print('❌ :获取QQ音乐下载链接失败，可能是数字专辑或需要单独付费。')
+        print('❌ :Failed to download from QQ, you may need to pay for it separately.')
         return ""
     ext = song_file_name.split('.')[-1]
     file_name = '.'.join([song_title, ext])
@@ -374,7 +374,7 @@ def convert_to_mp3(other_media):
 
     out_file = '.'.join(other_media.split('.')[:-1]) + '.mp3'
 
-    print('正在转换{origin} 为 {mp3}'.format(origin=other_media, mp3=out_file))
+    print('Converting{origin} to {mp3}'.format(origin=other_media, mp3=out_file))
 
     out_bytes = subprocess.check_output(['ffmpeg', '-i', other_media, '-c:a',
                                          'libmp3lame', '-aq', '2', out_file])
@@ -384,7 +384,7 @@ def convert_to_mp3(other_media):
 
 
 def try_get_file_in_qq_music(song_name, singer):
-    print('尝试搜索QQ音乐...')
+    print('Searching on QQ Music...')
     try:
         music_id = search_qq_music(song_name, singer)
         (song_v_key, song_file_name) = get_qq_music_dl_info(music_id)
@@ -407,7 +407,7 @@ def download_file(file_url, folder='',
                   export_file_name=None, extension=None):
 
     if not file_url or len(file_url) == 0:
-        print('下载链接无效.')
+        print('Invalid download link.')
         return None
     if not extension:
         extension = file_url.split('.')[-1]
@@ -422,7 +422,7 @@ def download_file(file_url, folder='',
         file = folder + os.sep + export_file_name + '.' + extension
 
     if os.path.exists(file):
-        print('文件已存在！')
+        print('File already exists！')
         return file
     with requests.get(file_url, stream=True) as response:
         #  单次请求最大值
@@ -432,7 +432,7 @@ def download_file(file_url, folder='',
         progress = ProgressBar(export_file_name + '.' + extension,
                                total=content_size, unit='kb',
                                chunk_size=chunk_size,
-                               run_status='正在下载', fin_status='下载完成')
+                               run_status='Downloading', fin_status='Download completed')
 
         with open(file, 'wb') as file:
             for data in response.iter_content(chunk_size=chunk_size):
@@ -458,9 +458,9 @@ def add_poster(poster, title, artists, album, year, track, music, br):
         out_bytes = subprocess.check_output(params)
         print(out_bytes.decode('utf-8'))
         if remove_file(poster):
-            print('删除封面文件成功。')
+            print('The coverart was applied successfully。')
         if remove_file(music):
-            print('删除音乐文件成功。')
+            print('Song file was downloaded successfully。')
 
         old_file = music + '.' + music.split('.')[-1]
         if os.path.exists(old_file):
@@ -661,34 +661,30 @@ class ProgressBar(object):
 
 def print_exception_solution(e):
     if type(e) == ModuleNotFoundError:
-        print('没有找到对应模块.')
-        print('本程序引用模块:requests, json, re, os, subprocess, sys')
-        print('请使用"pip3 install [模块]" 安装对应模块')
+        print('Module not found.')
+        print('Modules needed:requests, json, re, os, subprocess, sys')
+        print('Please use "pip3 install [module]" to install the corresponding module')
         print(e)
     elif type(e) == TypeError:
-        print('类型错误')
+        print('Type Error')
         print(e)
     else:
         print(e)
 
 
 def print_welcome():
-    print('*' * 97)
-    print('*\t\t\t\t欢迎使用网易云音乐下载工具\t\t\t\t\t*')
-    print('*' * 97)
-    print('* 1.本工具可以下载网易云音乐收费歌曲(单独付费除外，如霉霉的歌曲。)\t\t\t\t*')
-    print('* 2.可以下载单曲，也可以下载播放列表，只需要复制单曲或播放列表的网页地址即可。\t\t\t*')
-    print('* 3.可以下载播放列表的指定范围的歌曲，也可以下载整个播放列表。\t\t\t\t*')
-    print('* 4.可以专辑封面，但是需要电脑有lame库。如果没有，可以自动安装(需要系统有包管理工具Homebrew)\t*')
-    print('* 5.可以下载歌曲MV，默认下载最高分辨率的MV。 TODO:增加MV分辨率下载选项。\t\t\t*')
-    print('* 6.快捷方式:NetEaseMusic [url] [folder]', end='')
-    print(' //表示将连接url对应的文件下载到指定目录folder\t\t*')
-    print('* 7.版本:{}\t\t\t\t\t\t\t\t\t\t*'.format(__VERSION__))
-    print('* 8.编译日期: {}\t\t\t\t\t\t\t\t\t*'.format(__DATE__))
-    print('* 9.作者: AnarL.(anar930906@gmail.com)\t\t\t\t\t\t\t\t*')
-    print('*' * 97)
-    print('* *注:请尊重版权，树立版权意识。\t\t\t\t\t\t\t\t*')
-    print('*' * 97)
+    print('Welcome to Netease CloudMusic Downloader')
+    print('1. This tool can download most of Netease Cloud Music songs, except for separate payment songs (such as Taylor Swift)')
+    print('2. You can download both songs and full playlists. Just paste the url correctly.')
+    print('3. You can download a full playlists or just some songs from a playlist.')
+    print('4. In order to get song with coverart and song info, remember to install lame. (you can download it on Homebrew or google it)')
+    print('5. You can also download MVs and download the highest resolution for MVs by default (TODO: Increase MV resolution)')
+    print('6. Shortcut: NetEaseMusic [url] [folder]')
+    print('7. Version:{}'.format(__VERSION__))
+    print('8. Compilation date: {}'.format(__DATE__))
+    print('9. Author: AnarL.(anar930906@gmail.com)')
+    print('10. Translation: ignaciocastro')
+    print('NOTE: PLEASE APPLY TO YOUR CORRESPONDING COPYRIGHT LAWS IN YOUR COUNTRY.\t\t\t\t\t\t\t\t*')
 
 
 if __name__ == '__main__':
