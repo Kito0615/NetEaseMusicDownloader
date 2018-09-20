@@ -26,7 +26,7 @@ from config import music_genre
 from Crypto.Cipher import AES
 import base64
 
-__DATE__ = '2018年9月6日'
+__DATE__ = '2018-09-06'
 __VERSION__ = 'V 0.6.2'
 
 URL_TYPE_KEY = "url_type"
@@ -674,17 +674,19 @@ def print_exception_solution(e):
 
 def print_welcome():
     print('Welcome to Netease CloudMusic Downloader')
-    print('1. This tool can download most of Netease Cloud Music songs, except for separate payment songs (such as Taylor Swift)')
-    print('2. You can download both songs and full playlists. Just paste the url correctly.')
-    print('3. You can download a full playlists or just some songs from a playlist.')
-    print('4. In order to get song with coverart and song info, remember to install lame. (you can download it on Homebrew or google it)')
-    print('5. You can also download MVs and download the highest resolution for MVs by default (TODO: Increase MV resolution)')
-    print('6. Shortcut: NetEaseMusic [url] [folder]')
-    print('7. Version:{}'.format(__VERSION__))
-    print('8. Compilation date: {}'.format(__DATE__))
-    print('9. Author: AnarL.(anar930906@gmail.com)')
-    print('10. Translation: ignaciocastro')
-    print('NOTE: PLEASE APPLY TO YOUR CORRESPONDING COPYRIGHT LAWS IN YOUR COUNTRY.\t\t\t\t\t\t\t\t*')
+    print('\t1. This tool can download most of Netease Cloud Music songs,', end='')
+    print('\t   except for separate payment songs (such as Taylor Swift)')
+    print('\t2. You can download both songs and full playlists. Just paste the url correctly.')
+    print('\t3. You can download a full playlists or just some songs from a playlist.')
+    print('\t4. In order to get song with coverart and song info, remember to install lame.')
+    print('\t   (you can download it on Homebrew or google it)', end='')
+    print('\t resolution for MVs by default (TODO: Add MV resolution selection)')
+    print('\t5. You can also download MVs and download the highest')
+    print('\t6. Version:{}'.format(__VERSION__))
+    print('\t7. Compilation date: {}'.format(__DATE__))
+    print('\t8. Author: AnarL.(anar930906@gmail.com)')
+    print('\t9. Translation: ignaciocastro')
+    print('\tNOTE: PLEASE APPLY TO YOUR CORRESPONDING COPYRIGHT LAWS IN YOUR COUNTRY.')
 
 
 if __name__ == '__main__':
