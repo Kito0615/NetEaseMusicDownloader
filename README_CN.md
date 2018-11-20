@@ -2,7 +2,7 @@
 
 [README.md](https://github.com/Kito0615/NetEaseMusicDownloader/blob/master/README.md) 
 
-![](https://img.shields.io/badge/Platform-Python3-009eff.svg) ![](https://img.shields.io/badge/Windows-Supported-00efff.svg)  ![](https://img.shields.io/badge/MacOS-Supported-00efff.svg) ![](https://img.shields.io/badge/Linux-Supported-00efff.svg) ![](https://img.shields.io/badge/WebAPI-Failed-ee0000.svg)
+![](https://img.shields.io/badge/Platform-Python3-009eff.svg) ![](https://img.shields.io/badge/Windows-支持-00efff.svg)  ![](https://img.shields.io/badge/MacOS-支持-00efff.svg) ![](https://img.shields.io/badge/Linux-支持-00efff.svg) ![](https://img.shields.io/badge/WebAPI-可用-00efff.svg)
 
 > **注意:** 这个脚本使用了[AD's API](https://api.imjad.cn/) 提供的接口，在此表示感谢. 这个脚本仅供个人学习交流使用，不能用于任何商业用途，所有法律问题均与作者无关。
 >
