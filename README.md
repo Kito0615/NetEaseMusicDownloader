@@ -107,6 +107,6 @@
 
 [Homebrew](https://brew.sh/) 
 
-[License](https://github.com/Kito0615/NetEaseMusicDownloader/blob/master/MIT.md)
+[License](https://github.com/Kito0615/NetEaseMusicDownloader/blob/master/LICENSE)
 
 [FFMPEG](http://ffmpeg.org)
