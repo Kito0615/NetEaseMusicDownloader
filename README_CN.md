@@ -8,11 +8,16 @@
 >
 > **注意**: 新添加的[QQ音乐](http://y.qq.com)的接口来自其网站，**版权归[QQ音乐](http://y.qq.com)所有**。仅供**学习交流**使用.
 
+#### 更新: 2019-06-06
+
+1. 修改部分代码
+2. 增加本地化
+
 #### 更新:2018-09-06
 
 1. **全新版本发布**。现在增加了一些选项：
 
-2. 用法 : `python3 NetEaseMusicDownloader.py ` `[OPTIONS]` `URL` or `NetEaseMusicDownloader` `[OPTIONS]` `URL`
+2. 用法 : `python3 NetEaseMusic.py ` `[OPTIONS]` `URL` or `NetEaseMusic` `[OPTIONS]` `URL`
 
 3. 选项列表:
 

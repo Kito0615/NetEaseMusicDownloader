@@ -10,11 +10,16 @@
 >
 > **NOTE**: With new source from [QQMusic](http://y.qq.com) added, the source API is get from ite [webpage](http://y.qq.com), **all right revserved by [QQMusic](http://y.qq.com)**. This was **only for study**.
 
+#### Update: 2019-06-6
+
+1. Fix code.
+2. Localization
+
 #### Update:2018-09-06
 
 1. **New version of Downloader.**Add some options for the script.
 
-2. Usage : `python3 NetEaseMusicDownloader.py ` `[OPTIONS]` `URL` or `NetEaseMusicDownloader`  `[OPTIONS]` `URL`
+2. Usage : `python3 NetEaseMusic.py ` `[OPTIONS]` `URL` or `NetEaseMusic`  `[OPTIONS]` `URL`
 
 3. Option List:
 
