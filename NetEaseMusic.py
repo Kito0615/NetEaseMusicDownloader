@@ -20,6 +20,7 @@ import subprocess
 import sys
 import time
 import getopt
+import locale
 from config import http_error
 from config import music_genre
 
@@ -37,6 +38,43 @@ LIST_RANGE_KEY = "list_range"
 ADD_TO_ITUNES_KEY = "add_to_itunes"
 FOLDER_PATH_KEY = "folder_path"
 URL_KEY = "url"
+
+
+def _(s):
+    chineseStrings = {
+        'Matching ID...': '匹配ID中...',
+        'Obtain ID:': '取得ID: ',
+        '❌ :Failed to get song details!': '❌ :获取歌曲详细信息失败！',
+        '❌ :Failed to get MV details!': '❌ :获取音乐视频详细信息失败！',
+        'Downloading song from official API...': '正在从官方接口下载歌曲...',
+        'Downloading song from 3rd party API...': '正在从第三方接口下载歌曲...',
+        '❌ :Response Error': '❌ :响应错误',
+        'Downloading({}/{})': '下载中({}/{})',
+        'Downloading【{}】{}/{}': '下载中《{}》 {}/{}',
+        'Start parsing song list info...': '正在解析播放列表信息...',
+        'Start parsing album info...': '正在解析专辑信息...',
+        '❌ :Parsing of MV ID failed': '❌ :解析音乐视频ID失败',
+        '❌ :Parsing of song or playlist ID failed': '❌ :解析歌曲/播放列表ID失败',
+        'Downloading music:': '正在下载：',
+        'Downloading Coverart:': '正在下载封面：',
+        'Adding Coverart:': '正在添加封面：',
+        'Searching on QQ Music...': '正在从搜索QQ音乐...',
+        '❌ :Failed to download from QQ, you may need to pay for it separately.': '❌ :从QQ音乐下载失败，可能需要单独付费。',
+        'Converting{origin} to {mp3}': '正在将{origin}转换成{mp3}格式',
+        'Invalid download link.': '非法下载链接',
+        'File already exists!': '文件已经存在！',
+        'The coverart was applied successfully.': '已经成功添加封面。',
+        'Song file was downloaded successfully.': '成功下载歌曲文件。',
+        'Useage error.': '用法错误。',
+        'output folder path : ': '输入目录：',
+        'Module not found.': '模块未找到。',
+        'Modules needed:requests, json, re, os, subprocess, sys': '需安装模块：requests, json, re, os, subprocess, sys',
+        'Please use "pip3/pip install [module]" to install the corresponding module': '请使用"pip3/pip install [模块名]"来安装相应模块',
+        'Type Error': '类型错误。'}
+    if LANGUAGE == 'English':
+        return s
+    elif LANGUAGE == 'Chinese':
+        return chineseStrings[s]
 
 
 def get_genre_code(genre):
@@ -87,10 +125,10 @@ def get_response(url):
 
 
 def extract_id(input_url):
-    print('Matching ID...')
+    print(_('Matching ID...'))
     match = re.search(r'id=\d{2,12}', input_url)
     if match:
-        print('Obtain ID：', match.group(0)[3:])
+        print(_('Obtain ID:'), match.group(0)[3:])
         return match.group(0)[3:]
     return None
 
@@ -99,7 +137,7 @@ def get_song_name_album_poster(type_id):
     api = 'http://music.163.com/api/song/detail?ids=[{}]'.format(type_id)
     json_obj = get_response(api)
     if not json_obj:
-        print('❌：Failed to get song details！')
+        print(_('❌ :Failed to get song details!'))
         return None
 
     song_obj = json_obj['songs'][0]
@@ -151,7 +189,7 @@ def get_mv_info(type_id):
     api = 'https://api.imjad.cn/cloudmusic/?type=mv&id={}'.format(type_id)
     json_obj = get_response(api)
     if not json_obj:
-        print('❌ :Failed to get MV details!')
+        print(_('❌ :Failed to get MV details!'))
         return None
 
     mv_info = json_obj['data']
@@ -164,7 +202,7 @@ def get_mv_info(type_id):
 
 def get_music_url_with_official_api(type_id, br):
     # This section is for test official encryption.
-    print('Downloading song from official API...')
+    print(_('Downloading song from official API...'))
     first_param = '{ids:"[%s]", br:"%s", csrf_token:""}' % (type_id, br)
     data = {'params': get_params(first_param).encode('utf-8'), 'encSecKey': get_encSecKey()}
     ua = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.13; rv:59.0) Gecko/20100101 Firefox/59.0'
@@ -185,11 +223,11 @@ def get_music_url_with_official_api(type_id, br):
 
 
 def get_music_url_with_3rd_party_api(type_id, br):
-    print('Downloading song from 3rd party API...')
+    print(_('Downloading song from 3rd party API...'))
     api = 'https://api.imjad.cn/cloudmusic?type=song&id={}&br={}'.format(type_id, br)
     json_obj = get_response(api)
     if not json_obj:
-        print('❌ :Response Error')
+        print(_('❌ :Response Error'))
         return None
     return json_obj['data'][0]['url']
 
@@ -198,7 +236,7 @@ def get_playlist_songs(type_id, folder='', range=''):
     api = 'http://music.163.com/api/playlist/detail?id={}'.format(type_id)
     json_obj = get_response(api)
     if not json_obj:
-        print('❌：Response Error')
+        print(_('❌ :Response Error'))
         return
     tracks = extract_playlist_ids(json_obj['result']['tracks'])
     # print(tracks)
@@ -206,7 +244,7 @@ def get_playlist_songs(type_id, folder='', range=''):
     total = len(tracks)
     if len(range) == 0:
         for track in tracks:
-            print('Downloading({}/{})'.format(idx, total))
+            print(_('Downloading({}/{})').format(idx, total))
             url = 'http://music.163.com/#/song?id={}'.format(track)
             download_music(url, folder=folder)
             time.sleep(1)
@@ -214,7 +252,7 @@ def get_playlist_songs(type_id, folder='', range=''):
     else:
         for index in string_to_list(range):
             track = tracks[index - 1]
-            print('Downloading({}/{})'.format(index, len(tracks)))
+            print(_('Downloading({}/{})').format(index, len(tracks)))
             url = 'http://music.163.com/#/song?id={}'.format(track)
             download_music(url, folder=folder)
             time.sleep(1)
@@ -224,7 +262,7 @@ def get_album_songs(type_id, folder=''):
     api = 'https://api.imjad.cn/cloudmusic/?type=album&id={}'.format(type_id)
     json_obj = get_response(api)
     if not json_obj:
-        print('❌：Response Error')
+        print(_('❌ :Response Error'))
         return
 
     tracks = extract_playlist_ids(json_obj['songs'])
@@ -233,7 +271,7 @@ def get_album_songs(type_id, folder=''):
     total = len(tracks)
 
     for track in tracks:
-        print('Downloading《{}》({}/{})'.format(album_name, idx, total))
+        print(_('Downloading【{}】({}/{})'.format(album_name, idx, total)))
         url = 'http://music.163.com/#/song?id={}'.format(track)
         download_music(url, folder)
         time.sleep(1)
@@ -250,13 +288,13 @@ def extract_playlist_ids(tracks_json):
 
 def download_playlist(url, folder='', range=''):
     type_id = extract_id(url)
-    print('Start parsing song list info...')
+    print(_('Start parsing song list info...'))
     get_playlist_songs(type_id, folder=folder, range=range)
 
 
 def download_album(url, folder=''):
     type_id = extract_id(url)
-    print('Start parsing album info...')
+    print(_('Start parsing album info...'))
     get_album_songs(type_id, folder=folder)
 
 
@@ -265,7 +303,7 @@ def download_mv(url, folder=''):
     print('Downloading MV...')
     type_id = extract_id(url)
     if not type_id:
-        print('❌ :Parsing of MV ID failed')
+        print(_('❌ :Parsing of MV ID failed'))
         return
     (mv_url, mv_name) = get_mv_info(type_id)
     download_file(mv_url, folder=folder, export_file_name=mv_name)
@@ -277,28 +315,27 @@ def download_music(url, folder=''):
         os.mkdir(folder)
     type_id = extract_id(url)
     if not type_id:
-        print('❌ :Parsing of song or playlist ID failed')
+        print(_('❌ :Parsing of song or playlist ID failed'))
         return
 
     music_obj = get_song_name_album_poster(type_id)
     if not music_obj.title:
         return
 
-    print('Downloading music:')
+    print(_('Downloading music:'))
     url = get_music_url_with_official_api(type_id, music_obj.br)
     if url is None:
         url = get_music_url_with_3rd_party_api(type_id, music_obj.br)
 
     audio = download_file(url, folder=folder, export_file_name=music_obj.title)
-    print('------>')
     if not audio:
         audio = try_get_file_in_qq_music(music_obj.title, music_obj.artists)
 
     if not audio:
         return
-    print('Downloading Coverart:')
+    print(_('Downloading Coverart:'))
     poster = download_file(music_obj.poster, folder=folder, export_file_name=music_obj.title)
-    print('Adding Coverart:')
+    print(_('Adding Coverart:'))
     audio_name = ''
     if hasattr(audio, 'name'):
         audio_name = audio.name
@@ -330,7 +367,7 @@ QQ_music_song_dl_api = ('http://dl.stream.qqmusic.qq.com'
 
 def search_qq_music(music_name, singer):
 
-    print('Searching on QQ Music...')
+    print(_('Searching on QQ Music...'))
     url = QQ_music_search_tip_api.format(page=1, song_name=music_name)
     json_obj = get_response(url)
     songs = json_obj['data']['song']['list']
@@ -359,7 +396,7 @@ def download_qq_music(song_vkey, song_title, song_file_name):
     url = QQ_music_song_dl_api.format(file_name=song_file_name,
                                       v_key=song_vkey)
     if len(song_vkey) == 0:
-        print('❌ :Failed to download from QQ, you may need to pay for it separately.')
+        print(_('❌ :Failed to download from QQ, you may need to pay for it separately.'))
         return ""
     ext = song_file_name.split('.')[-1]
     file_name = '.'.join([song_title, ext])
@@ -374,7 +411,7 @@ def convert_to_mp3(other_media):
 
     out_file = '.'.join(other_media.split('.')[:-1]) + '.mp3'
 
-    print('Converting{origin} to {mp3}'.format(origin=other_media, mp3=out_file))
+    print(_('Converting{origin} to {mp3}'.format(origin=other_media, mp3=out_file)))
 
     out_bytes = subprocess.check_output(['ffmpeg', '-i', other_media, '-c:a',
                                          'libmp3lame', '-aq', '2', out_file])
@@ -384,7 +421,7 @@ def convert_to_mp3(other_media):
 
 
 def try_get_file_in_qq_music(song_name, singer):
-    print('Searching on QQ Music...')
+    print(_('Searching on QQ Music...'))
     try:
         music_id = search_qq_music(song_name, singer)
         (song_v_key, song_file_name) = get_qq_music_dl_info(music_id)
@@ -407,7 +444,7 @@ def download_file(file_url, folder='',
                   export_file_name=None, extension=None):
 
     if not file_url or len(file_url) == 0:
-        print('Invalid download link.')
+        print(_('Invalid download link.'))
         return None
     if not extension:
         extension = file_url.split('.')[-1]
@@ -422,7 +459,7 @@ def download_file(file_url, folder='',
         file = folder + os.sep + export_file_name + '.' + extension
 
     if os.path.exists(file):
-        print('File already exists！')
+        print(_('File already exists!'))
         return file
     with requests.get(file_url, stream=True) as response:
         #  单次请求最大值
@@ -458,9 +495,9 @@ def add_poster(poster, title, artists, album, year, track, music, br):
         out_bytes = subprocess.check_output(params)
         print(out_bytes.decode('utf-8'))
         if remove_file(poster):
-            print('The coverart was applied successfully。')
+            print(_('The coverart was applied successfully.'))
         if remove_file(music):
-            print('Song file was downloaded successfully。')
+            print(_('Song file was downloaded successfully.'))
 
         old_file = music + '.' + music.split('.')[-1]
         if os.path.exists(old_file):
@@ -552,11 +589,17 @@ def parse_option_values():
 
 
 def main():
+    global LANGUAGE
+    loc = locale.getdefaultlocale()
+    if loc[0] == 'zh_CN':
+        LANGUAGE = 'Chinese'
+    else:
+        LANGUAGE = 'English'
     options = parse_option_values()
     if options[URL_KEY].startswith('http'):
         pass
     else:
-        print('Useage error.')
+        print(_('Useage error.'))
         show_usage()
         sys.exit(-1)
     print_welcome()
@@ -567,7 +610,7 @@ def main():
         output_folder = os.path.expanduser(options[FOLDER_PATH_KEY])
     else:
         output_folder = os.getcwd()
-    print('output folder path : ' + output_folder)
+    print(_('output folder path : ') + output_folder)
     range_str = ''
     if LIST_RANGE_KEY in options:
         range_str = options[LIST_RANGE_KEY]
@@ -661,12 +704,12 @@ class ProgressBar(object):
 
 def print_exception_solution(e):
     if type(e) == ModuleNotFoundError:
-        print('Module not found.')
-        print('Modules needed:requests, json, re, os, subprocess, sys')
-        print('Please use "pip3 install [module]" to install the corresponding module')
+        print(_('Module not found.'))
+        print(_('Modules needed:requests, json, re, os, subprocess, sys'))
+        print(_('Please use "pip3 install [module]" to install the corresponding module'))
         print(e)
     elif type(e) == TypeError:
-        print('Type Error')
+        print(_('Type Error'))
         print(e)
     else:
         print(e)
