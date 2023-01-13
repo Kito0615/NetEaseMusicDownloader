@@ -101,6 +101,9 @@
 #### 用法:
 
  参考 [Update:2018-09-06](#更新2018-09-06)
+ 
+ #### 注意:
+**由于三方库已经失效，现在这个项目已经不再那么有用. 如果你想使用这个项目, 可以参考这个[NetEaseCloudMusicApi](https://github.com/Binaryify/NeteaseCloudMusicApi) 项目，并修改本项目中的API链接即可.**
 
 #### 环境:
 
