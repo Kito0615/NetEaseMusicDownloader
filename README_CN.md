@@ -7,6 +7,8 @@
 > **注意:** 这个脚本使用了[AD's API](https://api.imjad.cn/) 提供的接口，在此表示感谢. 这个脚本仅供个人学习交流使用，不能用于任何商业用途，所有法律问题均与作者无关。
 >
 > **注意**: 新添加的[QQ音乐](http://y.qq.com)的接口来自其网站，**版权归[QQ音乐](http://y.qq.com)所有**。仅供**学习交流**使用.
+> 
+> **注意**: **由于三方库已经失效，现在这个项目已经不再那么有用. 如果你想使用这个项目, 可以参考这个[NetEaseCloudMusicApi](https://github.com/Binaryify/NeteaseCloudMusicApi) 项目，并修改本项目中的API链接即可.**
 
 #### 更新: 2019-06-06
 
@@ -102,8 +104,7 @@
 
  参考 [Update:2018-09-06](#更新2018-09-06)
  
- #### 注意:
-**由于三方库已经失效，现在这个项目已经不再那么有用. 如果你想使用这个项目, 可以参考这个[NetEaseCloudMusicApi](https://github.com/Binaryify/NeteaseCloudMusicApi) 项目，并修改本项目中的API链接即可.**
+
 
 #### 环境:
 
