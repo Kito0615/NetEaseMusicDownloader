@@ -104,6 +104,9 @@
 
 ​	Check [Update:2018-09-06](#update2018-09-06)
 
+#### NOTE:
+**Third part API server is outdated. Now this project will not be useful. If you want to use this project, you can check this [NetEaseCloudMusicApi](https://github.com/Binaryify/NeteaseCloudMusicApi) project.**
+
 #### Envrionment:
 
 [Python3.0+](https://www.python.org/downloads/mac-osx/) (with [*requests*](https://github.com/requests/requests) installed.)
