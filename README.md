@@ -9,6 +9,8 @@
 > activities. All legal issues are not related to the author.
 >
 > **NOTE**: With new source from [QQMusic](http://y.qq.com) added, the source API is get from ite [webpage](http://y.qq.com), **all right revserved by [QQMusic](http://y.qq.com)**. This was **only for study**.
+> 
+> **NOTE**: **Third part API server is outdated. Now this project will not be useful. If you want to use this project, you can check this [NetEaseCloudMusicApi](https://github.com/Binaryify/NeteaseCloudMusicApi) project and modify api requests in this project.**
 
 #### Update: 2019-06-6
 
@@ -103,9 +105,6 @@
 #### Usage:
 
 ​	Check [Update:2018-09-06](#update2018-09-06)
-
-#### NOTE:
-**Third part API server is outdated. Now this project will not be useful. If you want to use this project, you can check this [NetEaseCloudMusicApi](https://github.com/Binaryify/NeteaseCloudMusicApi) project.**
 
 #### Envrionment:
 
