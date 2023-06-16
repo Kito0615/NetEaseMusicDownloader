@@ -185,7 +185,8 @@ def get_max_size(size_keys):
 
 
 def get_mv_info(type_id):
-    api = 'https://api.imjad.cn/cloudmusic/?type=mv&id={}'.format(type_id)
+    # api = 'https://api.imjad.cn/cloudmusic/?type=mv&id={}'.format(type_id)
+    api = 'http://localhost:3000/mv?mvid={}'.format(type_id)
     json_obj = get_response(api)
     if not json_obj:
         print(_('❌ :Failed to get MV details!'))
@@ -223,7 +224,8 @@ def get_music_url_with_official_api(type_id, br):
 
 def get_music_url_with_3rd_party_api(type_id, br):
     print(_('Downloading song from 3rd party API...'))
-    api = 'https://api.imjad.cn/cloudmusic?type=song&id={}&br={}'.format(type_id, br)
+    # api = 'https://api.imjad.cn/cloudmusic?type=song&id={}&br={}'.format(type_id, br)
+    api = 'http://localhost:3000/song/url?id={}&br={}'.format(type_id, br)
     json_obj = get_response(api)
     if not json_obj:
         print(_('❌ :Response Error'))
@@ -232,12 +234,13 @@ def get_music_url_with_3rd_party_api(type_id, br):
 
 
 def get_playlist_songs(type_id, folder='', range=''):
-    api = 'http://music.163.com/api/playlist/detail?id={}'.format(type_id)
+    # api = 'http://music.163.com/api/playlist/detail?id={}'.format(type_id)
+    api = 'http://localhost:3000/playlist/detail?id={}'.format(type_id)
     json_obj = get_response(api)
     if not json_obj:
         print(_('❌ :Response Error'))
         return
-    tracks = extract_playlist_ids(json_obj['result']['tracks'])
+    tracks = extract_playlist_ids(json_obj['playlist']['tracks'])
     # print(tracks)
     idx = 1
     total = len(tracks)
@@ -258,7 +261,8 @@ def get_playlist_songs(type_id, folder='', range=''):
 
 
 def get_album_songs(type_id, folder=''):
-    api = 'https://api.imjad.cn/cloudmusic/?type=album&id={}'.format(type_id)
+    # api = 'https://api.imjad.cn/cloudmusic/?type=album&id={}'.format(type_id)
+    api = 'http://localhost:3000/album?id={}'.format(type_id)
     json_obj = get_response(api)
     if not json_obj:
         print(_('❌ :Response Error'))
