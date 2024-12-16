@@ -1,16 +1,20 @@
 # NetEaseMusicDownloader
 
-[中文说明](https://github.com/Kito0615/NetEaseMusicDownloader/blob/master/README_CN.md) 
+[中文说明](https://github.com/Kito0615/NetEaseMusicDownloader/blob/master/README_CN.md)
 
 ![](https://img.shields.io/badge/Platform-Python3-009eff.svg) ![](https://img.shields.io/badge/Windows-Supported-00efff.svg)  ![](https://img.shields.io/badge/MacOS-Supported-00efff.svg) ![](https://img.shields.io/badge/Linux-Supported-00efff.svg) ![](https://img.shields.io/badge/WebAPI-Available-00efff.svg)
 
-> **NOTE:** In this script, I used some api via [AD's API](https://api.imjad.cn/). Thanks. This 
-> script is for personal use only. It cannot be used for any commercial 
+> **NOTE:** In this script, I used some api via [AD&#39;s API](https://api.imjad.cn/). Thanks. This
+> script is for personal use only. It cannot be used for any commercial
 > activities. All legal issues are not related to the author.
 >
-> **NOTE**: With new source from [QQMusic](http://y.qq.com) added, the source API is get from ite [webpage](http://y.qq.com), **all right revserved by [QQMusic](http://y.qq.com)**. This was **only for study**.
-> 
 > **NOTE**: **Third part API server is outdated. Now this project will not be useful. If you want to use this project, you can check this [NetEaseCloudMusicApi](https://github.com/Binaryify/NeteaseCloudMusicApi) project and modify api requests in this project.**
+
+#### Update:2024-12-26
+
+1. Remove search source from [QQMusic](https://y.qq.com).
+2. Add new feature for VIP user use cookie file to download with VIP permission.
+3. Other update.
 
 #### Update: 2019-06-6
 
@@ -20,12 +24,8 @@
 #### Update:2018-09-06
 
 1. **New version of Downloader.**Add some options for the script.
-
 2. Usage : `python3 NetEaseMusic.py ` `[OPTIONS]` `URL` or `NetEaseMusic`  `[OPTIONS]` `URL`
-
-3. Option List:
-
-   | Option            | Instruction                              |
+3. Option List:| Option            | Instruction                              |
    | ----------------- | ---------------------------------------- |
    | -h, --help        | Show help message.                       |
    | -s, --single      | Specific the URL is a single music.      |
@@ -58,10 +58,11 @@
 #### Update:2018-05-22:
 
 1. Now you can use this tool to download songs/playlists/albums. Use *AD's API*.
-2. Support windows now. 
+2. Support windows now.
 3. Support NetEaseMusic MV download now.
 
 #### Update:2018-05-17
+
 1. Add new source from [QQMusic](http://y.qq.com) when the song not available with [NetEaseMusic](http://music.163.com).
 2. Add new dependencies [FFMPEG](http://ffmpeg.org) for convert source from QQMusic with *.m4a* extension to *.mp3*.
 
@@ -70,7 +71,7 @@
 1. **Clone project**
 
    ```shell
-   git clone https://github.com/Kito0615/NetEaseMusic.git	
+   git clone https://github.com/Kito0615/NetEaseMusic.git
    ```
 
    Then you can run script(NetEaseMusic.py) in terminal with python3. Like:
@@ -85,7 +86,6 @@
    chmod +x NetEaseMusic.py
    ./NetEaseMusic.py
    ```
-
 2. **Download release**
 
    Click [here](https://github.com/Kito0615/NetEaseMusicDownloader/releases), download the version you need. Then you can run the binary file in terminal like:
@@ -100,11 +100,15 @@
    copy NetEaseMusic /usr/local/bin
    NetEaseMusic
    ```
+3. **Pypi**
 
+   ```shell
+   pip3 install NetEaseMusicDownloader
+   ```
 
 #### Usage:
 
-​	Check [Update:2018-09-06](#update2018-09-06)
+    Check[Update:2018-09-06](#update2018-09-06)
 
 #### Envrionment:
 
@@ -112,7 +116,7 @@
 
 [lame](http://lame.sourceforge.net) (use this lib to add Cover for audio.) [Here](https://github.com/Kito0615/NetEaseMusicDownloader/blob/master/Install_lame.md) is some instructions.
 
-[Homebrew](https://brew.sh/) 
+[Homebrew](https://brew.sh/)
 
 [License](https://github.com/Kito0615/NetEaseMusicDownloader/blob/master/LICENSE)
 

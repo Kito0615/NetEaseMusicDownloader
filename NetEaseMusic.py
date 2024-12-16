@@ -16,19 +16,23 @@ import requests
 import json
 import re
 import os
+import os.path
 import subprocess
 import sys
 import time
 import getopt
 import locale
+from http import cookiejar as cj
+
+import requests.cookies
 from config import http_error
 from config import music_genre
 
 from Crypto.Cipher import AES
 import base64
 
-__DATE__ = '2018-09-06'
-__VERSION__ = 'V 0.6.2'
+__DATE__ = '2024-12-15'
+__VERSION__ = 'V 0.7.1'
 
 URL_TYPE_KEY = "url_type"
 URL_TYPE_SINGLE = "single"
@@ -37,6 +41,7 @@ URL_TYPE_VIDEO = "video"
 LIST_RANGE_KEY = "list_range"
 ADD_TO_ITUNES_KEY = "add_to_itunes"
 FOLDER_PATH_KEY = "folder_path"
+COOKIE_FILE_KEY = "cookie_file"
 URL_KEY = "url"
 
 
@@ -114,9 +119,13 @@ def AES_encrypt(text, key):
     return encrypt_text
 
 
-def get_response(url):
-    ua = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.13; rv:59.0) Gecko/20100101 Firefox/59.0'
-    res = requests.get(url, headers={'User-Agent': ua})
+def get_response(url, cookies=None):
+    ua = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36 Edg/130.0.0.0'
+    res = ''
+    if cookies is not None:
+        res = requests.get(url, headers={'User-Agent': ua}, cookies=cookies)
+    else :
+        res = requests.get(url, headers={'User-Agent': ua})
     if res.status_code != 200:
         print('Network Error:', http_error[res.status_code])
         print(url)
@@ -132,13 +141,13 @@ def extract_id(input_url):
     return None
 
 
-def get_song_name_album_poster(type_id):
+def get_song_name_album_poster(type_id, cookie_file=''):
     api = 'http://music.163.com/api/song/detail?ids=[{}]'.format(type_id)
     json_obj = get_response(api)
     if not json_obj:
         print(_('❌ :Failed to get song details!'))
         return None
-
+    print(f'Json : {json_obj}')
     song_obj = json_obj['songs'][0]
     song_name = song_obj['name']
     artists = song_obj['artists']
@@ -156,8 +165,9 @@ def get_song_name_album_poster(type_id):
     track = song_obj['no']
     poster = album_obj['picUrl']
     br = get_music_best_bitrate(song_obj)
+    ext = get_music_extension(song_obj)
 
-    obj = Music(song_name, singers, album, year, track, poster, br)
+    obj = Music(song_name, singers, album, year, track, poster, br, ext)
     return obj
 
 
@@ -171,6 +181,19 @@ def get_music_best_bitrate(song_obj):
         br = song_obj['lMusic']['bitrate']
     elif 'bMusic' in song_obj and song_obj['bMusic'] is not None:
         br = song_obj['bMusic']['bitrate']
+
+    return br
+
+def get_music_extension(song_obj):
+    ext = 'mp3'
+    if 'hMusic' in song_obj and song_obj['hMusic'] is not None:
+        br = song_obj['hMusic']['extension']
+    elif 'mMusic' in song_obj and song_obj['mMusic'] is not None:
+        br = song_obj['mMusic']['extension']
+    elif 'lMusic' in song_obj and song_obj['lMusic'] is not None:
+        br = song_obj['lMusic']['extension']
+    elif 'bMusic' in song_obj and song_obj['bMusic'] is not None:
+        br = song_obj['bMusic']['extension']
 
     return br
 
@@ -200,38 +223,26 @@ def get_mv_info(type_id):
     return (default_mv_url, mv_name)
 
 
-def get_music_url_with_official_api(type_id, br):
+def get_music_url_with_official_api(type_id, br, cookie_file=''):
     # This section is for test official encryption.
     print(_('Downloading song from official API...'))
     first_param = '{ids:"[%s]", br:"%s", csrf_token:""}' % (type_id, br)
     data = {'params': get_params(first_param).encode('utf-8'), 'encSecKey': get_encSecKey()}
     ua = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.13; rv:59.0) Gecko/20100101 Firefox/59.0'
+    requests_cookie = get_requests_cookie_from_file(cookie_file)
     he = {"Referer": "http://music.163.com",
           'Host': 'music.163.com', 'User-Agent': ua,
           'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'}
     res = None
     try:
         url = 'http://music.163.com/weapi/song/enhance/player/url?csrf_token='
-        res = requests.post(url, headers=he, data=data)
+        res = requests.post(url, headers=he, data=data, cookies=requests_cookie)
     except Exception as e:
-        print(e)
-    #
+        print(f'Exception occurred : {e}')
     d = json.loads(res.text)
     if d['code'] == 200:
         return d['data'][0]['url']
     return None
-
-
-def get_music_url_with_3rd_party_api(type_id, br):
-    print(_('Downloading song from 3rd party API...'))
-    # api = 'https://api.imjad.cn/cloudmusic?type=song&id={}&br={}'.format(type_id, br)
-    api = 'http://localhost:3000/song/url?id={}&br={}'.format(type_id, br)
-    json_obj = get_response(api)
-    if not json_obj:
-        print(_('❌ :Response Error'))
-        return None
-    return json_obj['data'][0]['url']
-
 
 def get_playlist_songs(type_id, folder='', range=''):
     # api = 'http://music.163.com/api/playlist/detail?id={}'.format(type_id)
@@ -289,19 +300,19 @@ def extract_playlist_ids(tracks_json):
     return ret_tracks
 
 
-def download_playlist(url, folder='', range=''):
+def download_playlist(url, folder='', range='', cookie_file=''):
     type_id = extract_id(url)
     print(_('Start parsing song list info...'))
     get_playlist_songs(type_id, folder=folder, range=range)
 
 
-def download_album(url, folder=''):
+def download_album(url, folder='', cookie_file=''):
     type_id = extract_id(url)
     print(_('Start parsing album info...'))
     get_album_songs(type_id, folder=folder)
 
 
-def download_mv(url, folder=''):
+def download_mv(url, folder='', cookie_file=''):
     # pattern = https://music.163.com/#/mv?id={}
     print('Downloading MV...')
     type_id = extract_id(url)
@@ -312,7 +323,7 @@ def download_mv(url, folder=''):
     download_file(mv_url, folder=folder, export_file_name=mv_name)
 
 
-def download_music(url, folder=''):
+def download_music(url, folder='', cookie_file=''):
     # pattern = http://music.163.com/#/song?id={}
     if len(folder) > 0 and not os.path.exists(folder):
         os.mkdir(folder)
@@ -326,18 +337,16 @@ def download_music(url, folder=''):
         return
 
     print(_('Downloading music:'))
-    url = get_music_url_with_official_api(type_id, music_obj.br)
-    if url is None:
-        url = get_music_url_with_3rd_party_api(type_id, music_obj.br)
-
-    audio = download_file(url, folder=folder, export_file_name=music_obj.title)
+    url = get_music_url_with_official_api(type_id, music_obj.br, cookie_file)
+    
+    audio = download_file(url, cookie_file, folder=folder, export_file_name=music_obj.title, extension=music_obj.ext)
     if not audio:
         audio = try_get_file_in_qq_music(music_obj.title, music_obj.artists)
 
     if not audio:
         return
     print(_('Downloading Coverart:'))
-    poster = download_file(music_obj.poster, folder=folder, export_file_name=music_obj.title)
+    poster = download_file(music_obj.poster, cookie_file, folder=folder, export_file_name=music_obj.title)
     print(_('Adding Coverart:'))
     audio_name = ''
     if hasattr(audio, 'name'):
@@ -443,7 +452,28 @@ def try_get_file_in_qq_music(song_name, singer):
         print(e)
 
 
-def download_file(file_url, folder='',
+def get_requests_cookie_from_file(cookie_file=''):
+    requests_cookie = requests.cookies.RequestsCookieJar()
+    if (len(cookie_file) != 0) :
+        if not os.path.isfile:
+            return FileNotFoundError(f'Cookie file not found at: {cookie_file}')
+        cookie = cj.MozillaCookieJar()
+        try:
+            cookie.load(cookie_file, ignore_discard=True, ignore_expires=True)
+        except Exception as e:
+            raise ValueError(f'Failed to load cookie text from {e}')
+        for cookie_item in cookie:
+            requests_cookie.set(
+                name = cookie_item.name,
+                value = cookie_item.value,
+                domain = cookie_item.domain,
+                path = cookie_item.path,
+                rest = {'HttpOnly': cookie_item.get_nonstandard_attr('HttpOnly')}
+            )
+    return requests_cookie
+
+
+def download_file(file_url, cookie_file='', folder='',
                   export_file_name=None, extension=None):
 
     if not file_url or len(file_url) == 0:
@@ -464,7 +494,8 @@ def download_file(file_url, folder='',
     if os.path.exists(file):
         print(_('File already exists!'))
         return file
-    with requests.get(file_url, stream=True) as response:
+    requests_cookie = get_requests_cookie_from_file(cookie_file)
+    with requests.get(file_url, stream=True, cookies=requests_cookie) as response:
         #  单次请求最大值
         chunk_size = 1024
         #  内容总体大小
@@ -542,7 +573,7 @@ def get_itunes_library_path():
 
 
 def show_usage():
-    print('%s [-h|-l|-v|-s|-r|-a|-f] [--help|--list|--video|--single|--range|--all|--folder] url'
+    print('%s [-h|-l|-v|-s|-r|-a|-f|-c] [--help|--list|--video|--single|--range|--all|--folder|--cookies] url'
           % (__file__))
     print('Usage :')
     print('\t-h, --help           : show this help message.')
@@ -565,11 +596,12 @@ def show_usage():
     print('\t-f, --folder FOLDER  : save downloaded media to FOLDER')
     print('\t                       if not use this option, script will download media to the')
     print('\t                       current directory or iTunes library path if -a|--auto used.')
+    print('\t-c, --cookies COOKIE.txt : Use cookies.txt to get VIP account info.')
 
 
 def parse_option_values():
-    opts, args = getopt.getopt(sys.argv[1:], 'hlsvr:af:',
-                               ['help', 'list', 'single', 'video', 'range=', 'auto', 'folder='])
+    opts, args = getopt.getopt(sys.argv[1:], 'hlsvr:af:c:',
+                               ['help', 'list', 'single', 'video', 'range=', 'auto', 'folder=', 'cookies='])
     options = {ADD_TO_ITUNES_KEY: False}
     for key, value in opts:
         if key in ('-h', '--help'):
@@ -587,13 +619,15 @@ def parse_option_values():
             options[LIST_RANGE_KEY] = value
         if key in ('-f', '--folder'):
             options[FOLDER_PATH_KEY] = value
+        if key in ('-c', '--cookies'):
+            options[COOKIE_FILE_KEY] = value
     options[URL_KEY] = sys.argv[-1]
     return options
 
 
 def main():
     global LANGUAGE
-    loc = locale.getdefaultlocale()
+    loc = locale.getlocale()
     if loc[0] == 'zh_CN':
         LANGUAGE = 'Chinese'
     else:
@@ -620,20 +654,20 @@ def main():
 
     if URL_TYPE_KEY in options:
         if options[URL_TYPE_KEY] == URL_TYPE_SINGLE:
-            download_music(options[URL_KEY], folder=output_folder)
+            download_music(options[URL_KEY], folder=output_folder, cookie_file=options[COOKIE_FILE_KEY])
         elif options[URL_TYPE_KEY] == URL_TYPE_LIST:
-            download_playlist(options[URL_KEY], folder=output_folder, range=range_str)
+            download_playlist(options[URL_KEY], folder=output_folder, range=range_str, cookie_file=options[COOKIE_FILE_KEY])
         elif options[URL_TYPE_KEY] == URL_TYPE_VIDEO:
-            download_mv(options[URL_KEY], folder=output_folder)
+            download_mv(options[URL_KEY], folder=output_folder, cookie_file=options[COOKIE_FILE_KEY])
     else:
         if judge_if_playlist(options[URL_KEY]):
-            download_playlist(options[URL_KEY], folder=output_folder, range=range_str)
+            download_playlist(options[URL_KEY], folder=output_folder, range=range_str, cookie_file=options[COOKIE_FILE_KEY])
         elif judge_if_album(options[URL_KEY]):
-            download_album(options[URL_KEY], folder=output_folder)
+            download_album(options[URL_KEY], folder=output_folder, cookie_file=options[COOKIE_FILE_KEY])
         elif judge_if_mv(options[URL_KEY]):
-            download_mv(options[URL_KEY], folder=output_folder)
+            download_mv(options[URL_KEY], folder=output_folder, cookie_file=options[COOKIE_FILE_KEY])
         else:
-            download_music(options[URL_KEY], folder=output_folder)
+            download_music(options[URL_KEY], folder=output_folder, cookie_file=options[COOKIE_FILE_KEY])
 
 
 def judge_if_playlist(url):
@@ -659,7 +693,7 @@ def year_of_timestamp(unix_time):
 
 
 class Music():
-    def __init__(self, title, artists, album, year, track, poster, br):
+    def __init__(self, title, artists, album, year, track, poster, br, ext):
         self.title = title
         self.artists = ','.join(artists)
         self.album = album
@@ -667,6 +701,7 @@ class Music():
         self.track = track
         self.poster = poster
         self.br = br
+        self.ext = ext
 
 
 class ProgressBar(object):

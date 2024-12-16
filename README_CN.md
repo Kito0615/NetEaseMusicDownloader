@@ -1,14 +1,20 @@
 # NetEaseMusicDownloader
 
-[README.md](https://github.com/Kito0615/NetEaseMusicDownloader/blob/master/README.md) 
+[README.md](https://github.com/Kito0615/NetEaseMusicDownloader/blob/master/README.md)
 
 ![](https://img.shields.io/badge/Platform-Python3-009eff.svg) ![](https://img.shields.io/badge/Windows-支持-00efff.svg)  ![](https://img.shields.io/badge/MacOS-支持-00efff.svg) ![](https://img.shields.io/badge/Linux-支持-00efff.svg) ![](https://img.shields.io/badge/WebAPI-可用-00efff.svg)
 
-> **注意:** 这个脚本使用了[AD's API](https://api.imjad.cn/) 提供的接口，在此表示感谢. 这个脚本仅供个人学习交流使用，不能用于任何商业用途，所有法律问题均与作者无关。
+> **注意:** 这个脚本使用了[AD&#39;s API](https://api.imjad.cn/) 提供的接口，在此表示感谢. 这个脚本仅供个人学习交流使用，不能用于任何商业用途，所有法律问题均与作者无关。
 >
 > **注意**: 新添加的[QQ音乐](http://y.qq.com)的接口来自其网站，**版权归[QQ音乐](http://y.qq.com)所有**。仅供**学习交流**使用.
-> 
+>
 > **注意**: **由于三方库已经失效，现在这个项目已经不再那么有用. 如果你想使用这个项目, 可以参考这个[NetEaseCloudMusicApi](https://github.com/Binaryify/NeteaseCloudMusicApi) 项目，并修改本项目中的API链接即可.**
+
+#### 更新：2024-12-16
+
+1. 移除搜索源QQ音乐。
+2. 增加从Cookie文件导入VIP特权，以下载VIP歌曲的功能。
+3. 其他更新
 
 #### 更新: 2019-06-06
 
@@ -18,11 +24,8 @@
 #### 更新:2018-09-06
 
 1. **全新版本发布**。现在增加了一些选项：
-
 2. 用法 : `python3 NetEaseMusic.py ` `[OPTIONS]` `URL` or `NetEaseMusic` `[OPTIONS]` `URL`
-
 3. 选项列表:
-
    | 选项              | 描述                                 |
    | ----------------- | ------------------------------------ |
    | -h, --help        | 打印帮助信息                         |
@@ -64,12 +67,18 @@
 1. 当[网易云音乐](http://music.163.com) 音乐资源不可用时，增加新的搜索源[QQ音乐](http://y.qq.com)。
 2. 增加新的依赖库[FFMPEG](http://ffmpeg.org)，用来转换从QQ音乐下载的*.m4a*文件为*.mp3*。
 
+#### 更新：2024-12-16
+
+1. 移除搜索源QQ音乐。
+2. 增加从Cookie文件导入VIP特权，以下载VIP歌曲的功能。
+3. 其他更新
+
 #### 下载:
 
 1. **下载完整工程**
 
    ```shell
-   git clone https://github.com/Kito0615/NetEaseMusic.git	
+   git clone https://github.com/Kito0615/NetEaseMusic.git
    ```
 
    在终端直接运行脚本源码文件(NetEaseMusic.py)。需要python3环境。
@@ -84,7 +93,6 @@
    chmod +x NetEaseMusic.py
    ./NetEaseMusic.py
    ```
-
 2. **下载发布文件**
 
    点击 [这里](https://github.com/Kito0615/NetEaseMusicDownloader/releases), 下载你需要的版本. 再在终端执行:
@@ -99,12 +107,9 @@
    NetEaseMusic
    ```
 
-
 #### 用法:
 
  参考 [Update:2018-09-06](#更新2018-09-06)
- 
-
 
 #### 环境:
 
@@ -112,7 +117,7 @@
 
 [lame](http://lame.sourceforge.net) (用于给音乐添加封面) [这里](https://github.com/Kito0615/NetEaseMusicDownloader/blob/master/Install_lame.md)有一点安装指南。
 
-[Homebrew](https://brew.sh/) 
+[Homebrew](https://brew.sh/)
 
 [License](https://github.com/Kito0615/NetEaseMusicDownloader/blob/master/LICENSE)
 
