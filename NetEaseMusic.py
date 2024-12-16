@@ -32,7 +32,7 @@ from Crypto.Cipher import AES
 import base64
 
 __DATE__ = '2024-12-15'
-__VERSION__ = 'V 0.7.1'
+__VERSION__ = 'V 0.7.2'
 
 URL_TYPE_KEY = "url_type"
 URL_TYPE_SINGLE = "single"
@@ -45,7 +45,7 @@ COOKIE_FILE_KEY = "cookie_file"
 URL_KEY = "url"
 
 
-def _(s):
+def _(s, lan='English'):
     chineseStrings = {
         'Matching ID...': '匹配ID中...',
         'Obtain ID:': '取得ID: ',
@@ -76,10 +76,10 @@ def _(s):
         'Modules needed:requests, json, re, os, subprocess, sys': '需安装模块：requests, json, re, os, subprocess, sys',
         'Please use "pip3/pip install [module]" to install the corresponding module': '请使用"pip3/pip install [模块名]"来安装相应模块',
         'Type Error': '类型错误。'}
-    if LANGUAGE == 'English':
-        return s
-    elif LANGUAGE == 'Chinese':
+    if lan == 'Chinese':
         return chineseStrings[s]
+    else:
+        return s
 
 
 def get_genre_code(genre):
@@ -628,7 +628,7 @@ def parse_option_values():
 def main():
     global LANGUAGE
     loc = locale.getlocale()
-    if loc[0] == 'zh_CN':
+    if loc[0] == 'zh_CN' or loc[0] == 'en_CN':
         LANGUAGE = 'Chinese'
     else:
         LANGUAGE = 'English'
