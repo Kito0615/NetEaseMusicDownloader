@@ -25,7 +25,9 @@
 
 1. **New version of Downloader.**Add some options for the script.
 2. Usage : `python3 NetEaseMusic.py ` `[OPTIONS]` `URL` or `NetEaseMusic`  `[OPTIONS]` `URL`
-3. Option List:| Option            | Instruction                              |
+3. Option List:
+
+   | Option            | Instruction                              |
    | ----------------- | ---------------------------------------- |
    | -h, --help        | Show help message.                       |
    | -s, --single      | Specific the URL is a single music.      |
