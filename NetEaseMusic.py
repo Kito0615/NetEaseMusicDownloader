@@ -487,7 +487,7 @@ def download_file(file_url, cookie_file='', folder='',
 
     file = ''
     if len(folder) == 0:
-        file = export_file_name + '.' + extension
+        file = f'{export_file_name}.{extension}'
     else:
         file = folder + os.sep + export_file_name + '.' + extension
 
@@ -602,7 +602,7 @@ def show_usage():
 def parse_option_values():
     opts, args = getopt.getopt(sys.argv[1:], 'hlsvr:af:c:',
                                ['help', 'list', 'single', 'video', 'range=', 'auto', 'folder=', 'cookies='])
-    options = {ADD_TO_ITUNES_KEY: False}
+    options = {ADD_TO_ITUNES_KEY: False, COOKIE_FILE_KEY: ''}
     for key, value in opts:
         if key in ('-h', '--help'):
             show_usage()
@@ -694,7 +694,7 @@ def year_of_timestamp(unix_time):
 
 class Music():
     def __init__(self, title, artists, album, year, track, poster, br, ext):
-        self.title = title
+        self.title = title.replace('/', '_')
         self.artists = ','.join(artists)
         self.album = album
         self.year = year
