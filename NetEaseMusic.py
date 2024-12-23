@@ -23,16 +23,17 @@ import time
 import getopt
 import locale
 from http import cookiejar as cj
+import tempfile
 
-import requests.cookies
+# from requests import cookies
 from config import http_error
 from config import music_genre
 
 from Crypto.Cipher import AES
 import base64
 
-__DATE__ = '2024-12-15'
-__VERSION__ = 'V 0.7.2'
+__DATE__ = '2024-12-23'
+__VERSION__ = 'V 0.7.4'
 
 URL_TYPE_KEY = "url_type"
 URL_TYPE_SINGLE = "single"
@@ -45,7 +46,7 @@ COOKIE_FILE_KEY = "cookie_file"
 URL_KEY = "url"
 
 
-def _(s, lan='English'):
+def _(s, lan='Chinese'):
     chineseStrings = {
         'Matching ID...': '匹配ID中...',
         'Obtain ID:': '取得ID: ',
@@ -71,11 +72,12 @@ def _(s, lan='English'):
         'The coverart was applied successfully.': '已经成功添加封面。',
         'Song file was downloaded successfully.': '成功下载歌曲文件。',
         'Useage error.': '用法错误。',
-        'output folder path : ': '输入目录：',
+        'output folder path : ': '输出目录：',
         'Module not found.': '模块未找到。',
         'Modules needed:requests, json, re, os, subprocess, sys': '需安装模块：requests, json, re, os, subprocess, sys',
         'Please use "pip3/pip install [module]" to install the corresponding module': '请使用"pip3/pip install [模块名]"来安装相应模块',
-        'Type Error': '类型错误。'}
+        'Type Error': '类型错误。',
+        'Error Code :': '错误代码：'}
     if lan == 'Chinese':
         return chineseStrings[s]
     else:
@@ -121,11 +123,14 @@ def AES_encrypt(text, key):
 
 def get_response(url, cookies=None):
     ua = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36 Edg/130.0.0.0'
+    he = {"Referer": "http://music.163.com",
+          'Host': 'music.163.com', 'User-Agent': ua,
+          'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'}
     res = ''
     if cookies is not None:
-        res = requests.get(url, headers={'User-Agent': ua}, cookies=cookies)
+        res = requests.get(url, headers=he, cookies=cookies)
     else :
-        res = requests.get(url, headers={'User-Agent': ua})
+        res = requests.get(url, headers=he)
     if res.status_code != 200:
         print('Network Error:', http_error[res.status_code])
         print(url)
@@ -142,7 +147,7 @@ def extract_id(input_url):
 
 
 def get_song_name_album_poster(type_id, cookie_file=''):
-    api = 'http://music.163.com/api/song/detail?ids=[{}]'.format(type_id)
+    api = f'http://music.163.com/api/song/detail?ids=[{type_id}]'
     json_obj = get_response(api)
     if not json_obj:
         print(_('❌ :Failed to get song details!'))
@@ -207,10 +212,11 @@ def get_max_size(size_keys):
     return str(max_size)
 
 
-def get_mv_info(type_id):
+def get_mv_info(type_id, cookie_file=''):
     # api = 'https://api.imjad.cn/cloudmusic/?type=mv&id={}'.format(type_id)
-    api = 'http://localhost:3000/mv?mvid={}'.format(type_id)
-    json_obj = get_response(api)
+    api = f'https://music.163.com/api/mv/detail?id={type_id}'
+    requests_cookie = get_requests_cookie_from_file(cookie_file)
+    json_obj = get_response(api, cookies=requests_cookie)
     if not json_obj:
         print(_('❌ :Failed to get MV details!'))
         return None
@@ -244,21 +250,21 @@ def get_music_url_with_official_api(type_id, br, cookie_file=''):
         return d['data'][0]['url']
     return None
 
-def get_playlist_songs(type_id, folder='', range=''):
-    # api = 'http://music.163.com/api/playlist/detail?id={}'.format(type_id)
-    api = 'http://localhost:3000/playlist/detail?id={}'.format(type_id)
-    json_obj = get_response(api)
-    if not json_obj:
+def get_playlist_songs(type_id, folder='', range='', cookie_file = ''):
+    json_obj = get_playlist_info(type_id, cookie_file=cookie_file)
+    if json_obj is None:
         print(_('❌ :Response Error'))
         return
-    tracks = extract_playlist_ids(json_obj['playlist']['tracks'])
-    # print(tracks)
+    elif json_obj['code'] != 200:
+        print(json_obj)
+        return
+    tracks = extract_playlist_ids(json_obj['result']['tracks'])
     idx = 1
     total = len(tracks)
     if len(range) == 0:
         for track in tracks:
             print(_('Downloading({}/{})').format(idx, total))
-            url = 'http://music.163.com/#/song?id={}'.format(track)
+            url = f'http://music.163.com/#/song?id={track}'
             download_music(url, folder=folder)
             time.sleep(1)
             idx += 1
@@ -266,14 +272,14 @@ def get_playlist_songs(type_id, folder='', range=''):
         for index in string_to_list(range):
             track = tracks[index - 1]
             print(_('Downloading({}/{})').format(index, len(tracks)))
-            url = 'http://music.163.com/#/song?id={}'.format(track)
+            url = f'http://music.163.com/#/song?id={track}'
             download_music(url, folder=folder)
             time.sleep(1)
 
 
 def get_album_songs(type_id, folder=''):
     # api = 'https://api.imjad.cn/cloudmusic/?type=album&id={}'.format(type_id)
-    api = 'http://localhost:3000/album?id={}'.format(type_id)
+    api = f'http://localhost:3000/album?id={type_id}'
     json_obj = get_response(api)
     if not json_obj:
         print(_('❌ :Response Error'))
@@ -285,8 +291,8 @@ def get_album_songs(type_id, folder=''):
     total = len(tracks)
 
     for track in tracks:
-        print(_('Downloading【{}】({}/{})'.format(album_name, idx, total)))
-        url = 'http://music.163.com/#/song?id={}'.format(track)
+        print(_('Downloading【{}】({}/{})' % (album_name, idx, total)))
+        url = f'http://music.163.com/#/song?id={track}'
         download_music(url, folder)
         time.sleep(1)
         idx += 1
@@ -303,7 +309,7 @@ def extract_playlist_ids(tracks_json):
 def download_playlist(url, folder='', range='', cookie_file=''):
     type_id = extract_id(url)
     print(_('Start parsing song list info...'))
-    get_playlist_songs(type_id, folder=folder, range=range)
+    get_playlist_songs(type_id, folder=folder, range=range, cookie_file=cookie_file)
 
 
 def download_album(url, folder='', cookie_file=''):
@@ -340,8 +346,6 @@ def download_music(url, folder='', cookie_file=''):
     url = get_music_url_with_official_api(type_id, music_obj.br, cookie_file)
     
     audio = download_file(url, cookie_file, folder=folder, export_file_name=music_obj.title, extension=music_obj.ext)
-    if not audio:
-        audio = try_get_file_in_qq_music(music_obj.title, music_obj.artists)
 
     if not audio:
         return
@@ -358,67 +362,6 @@ def download_music(url, folder='', cookie_file=''):
                audio_name, music_obj.br)
 
 
-QQ_music_search_tip_api = ('https://c.y.qq.com/soso/fcgi-bin'
-                           '/client_search_cp?ct=24&qqmusic_ver=1298'
-                           '&new_json=1&remoteplace=txt.yqq.song'
-                           '&searchid=56069080114511262&t=0'
-                           '&aggr=1&cr=1&catZhida=1&lossless=0'
-                           '&flag_qc=0&p={page}&n=20&w={song_name}'
-                           '&g_tk=5381&loginUin=0&hostUin=0'
-                           '&format=json&inCharset=utf8'
-                           '&outCharset=utf-8&notice=0&platform=yqq&needNewCode=0')
-QQ_music_song_info_api = ('https://c.y.qq.com/base/fcgi-bin/fcg_music_express_mobile3.fcg'
-                          '?g_tk=63395543&hostUin=0&format=json&inCharset=utf8'
-                          '&outCharset=utf-8&notice=0&platform=yqq&needNewCode=0'
-                          '&cid=205361747&songmid={song_id}'
-                          '&filename=C400{song_id}.m4a&guid=9362313912')
-QQ_music_song_dl_api = ('http://dl.stream.qqmusic.qq.com'
-                        '/{file_name}?vkey={v_key}&guid=9362313912'
-                        '&uin=0&fromtag=66')
-
-
-def search_qq_music(music_name, singer):
-
-    print(_('Searching on QQ Music...'))
-    url = QQ_music_search_tip_api.format(page=1, song_name=music_name)
-    json_obj = get_response(url)
-    songs = json_obj['data']['song']['list']
-
-    target_id = ''
-
-    for item in songs:
-        item_singer = item['singer'][0]['name']
-
-        if item_singer == singer:
-            target_id = item['mid']
-            break
-
-    return target_id
-
-
-def get_qq_music_dl_info(mid):
-    url = QQ_music_song_info_api.format(song_id=mid)
-    json_obj = get_response(url)
-
-    song_obj = json_obj['data']['items'][0]
-    return (song_obj['vkey'], song_obj['filename'])
-
-
-def download_qq_music(song_vkey, song_title, song_file_name):
-    url = QQ_music_song_dl_api.format(file_name=song_file_name,
-                                      v_key=song_vkey)
-    if len(song_vkey) == 0:
-        print(_('❌ :Failed to download from QQ, you may need to pay for it separately.'))
-        return ""
-    ext = song_file_name.split('.')[-1]
-    file_name = '.'.join([song_title, ext])
-    res = requests.get(url)
-    with open(file_name, 'wb') as f:
-        f.write(res.content)
-
-    return file_name
-
-
 def convert_to_mp3(other_media):
 
     out_file = '.'.join(other_media.split('.')[:-1]) + '.mp3'
@@ -430,27 +373,6 @@ def convert_to_mp3(other_media):
     print(out_bytes)
 
     return out_file
-
-
-def try_get_file_in_qq_music(song_name, singer):
-    print(_('Searching on QQ Music...'))
-    try:
-        music_id = search_qq_music(song_name, singer)
-        (song_v_key, song_file_name) = get_qq_music_dl_info(music_id)
-        song_file = download_qq_music(song_v_key, song_name, song_file_name)
-        mp3_file = ''
-
-        if len(song_file) == 0:
-            return None
-
-        if song_file.split('.')[-1] != 'mp3':
-            mp3_file = convert_to_mp3(song_file)
-            os.remove(song_file)
-
-        return mp3_file
-    except Exception as e:
-        print(e)
-
 
 def get_requests_cookie_from_file(cookie_file=''):
     requests_cookie = requests.cookies.RequestsCookieJar()
@@ -480,10 +402,10 @@ def download_file(file_url, cookie_file='', folder='',
         print(_('Invalid download link.'))
         return None
     if not extension:
-        extension = file_url.split('.')[-1]
+        extension = file_url.split('.')[-1].split('?')[0]
 
     if not export_file_name:
-        export_file_name = file_url.split('/')[-1]
+        export_file_name = file_url.split('/')[-1].split('?')[0]
 
     file = ''
     if len(folder) == 0:
@@ -692,6 +614,38 @@ def year_of_timestamp(unix_time):
     return time.localtime(unix_time)[0]
 
 
+def get_system_cache_folder():
+    tempFolder = tempfile.gettempdir()
+    return tempFolder
+
+
+def playlist_id_analaysed(type_id):
+    tempPath = get_system_cache_folder()
+    tempFile = os.path.join(tempPath, str(type_id) + '.json')
+    return tempFile
+
+
+def get_playlist_info(type_id, cookie_file=''):
+    tempFilePath = playlist_id_analaysed(type_id)
+    if os.path.exists(tempFilePath):
+        with open(tempFilePath, 'r') as file:
+            json_obj = json.load(file)
+            return json_obj
+    else:
+        api = f'https://music.163.com/api/playlist/detail?id={type_id}'
+        # api = 'http://localhost:3000/playlist/detail?id={}'.format(type_id)
+        requests_cookie = get_requests_cookie_from_file(cookie_file)
+        ua = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.13; rv:59.0) Gecko/20100101 Firefox/59.0'
+        he = {"Referer": "http://music.163.com",
+            'Host': 'music.163.com', 'User-Agent': ua,
+            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'}
+        res = requests.get(api, headers=he, cookies=requests_cookie)
+        json_obj = json.loads(res.text)
+        if json_obj is not None and json_obj['code'] == 200:
+            with open(tempFilePath, 'w') as f:
+                json.dump(json_obj, f)
+        return json_obj
+    
 class Music():
     def __init__(self, title, artists, album, year, track, poster, br, ext):
         self.title = title.replace('/', '_')
@@ -766,7 +720,7 @@ def print_welcome():
     print('\t6. Version:{}'.format(__VERSION__))
     print('\t7. Compilation date: {}'.format(__DATE__))
     print('\t8. Author: AnarL.(anar930906@gmail.com)')
-    print('\t9. Translation: ignaciocastro')
+    print('\t9. Translation: ignaciocastro(https://github.com/ignaciocastro)')
     print('\tNOTE: PLEASE APPLY TO YOUR CORRESPONDING COPYRIGHT LAWS IN YOUR COUNTRY.')
 
 

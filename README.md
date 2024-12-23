@@ -10,7 +10,13 @@
 >
 > **NOTE**: **Third part API server is outdated. Now this project will not be useful. If you want to use this project, you can check this [NetEaseCloudMusicApi](https://github.com/Binaryify/NeteaseCloudMusicApi) project and modify api requests in this project.**
 
-#### Update:2024-12-26
+#### Update:2024-12-23
+
+1. Added cache to reduce presure for official server.
+2. Fixed `Playst` and `Music Video` cannot download.
+3. Fixed other issues. 
+
+#### Update:2024-12-16
 
 1. Remove search source from [QQMusic](https://y.qq.com).
 2. Add new feature for VIP user use cookie file to download with VIP permission.
